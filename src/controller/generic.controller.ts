@@ -5,6 +5,28 @@ import { genericService } from "../service/generic.service";
 import respFormat from "../utils/response/respFormat";
 
 class GenericController {
+  async getByAliasName(req: Request, resp: Response) {
+    try {
+      if (req.params) {
+        const aliasName =
+          req.params.aliasName !== undefined ? req.params.aliasName : "";
+        const generic = await genericService.getGenericByAliasName(aliasName);
+
+        if (generic) {
+          resp.status(200);
+          resp.send(respFormat(generic, `Generic found`, true));
+        } else {
+          resp.status(202);
+          resp.send(respFormat(null, "generic not found"));
+        }
+      }
+    } catch (error) {
+      apiWriteLog.error("generic by alias Error ", error);
+      resp.status(202);
+      resp.send(respFormat(null, "generic not found"));
+    }
+  }
+
   async getAll(req: Request, resp: Response) {
     try {
       apiWriteLog.info("Geting All Generic", null);
@@ -16,7 +38,6 @@ class GenericController {
         );
       } else {
         resp.status(202);
-
         resp.send(respFormat(generics, `generic not found`));
       }
     } catch (error) {

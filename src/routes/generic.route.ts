@@ -7,6 +7,8 @@ genericRoute.get("/", genericController.getAll);
 
 genericRoute.get(`/:id`, genericController.getById);
 
+genericRoute.get(`/alias/:aliasName`, genericController.getByAliasName);
+
 genericRoute.post("/", genericController.add);
 
 genericRoute.put("/", genericController.update);

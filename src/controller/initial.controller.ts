@@ -36,10 +36,10 @@ class InitialController {
     try {
 
       const sprt = path.sep;
-      const fileName = `Pharmaceutical Name with specific id.xlsx`;
+      const fileName = `Retail Allopathy Pharmacy Location.xlsx`;
 
       const filePath = path.join(__dirname, `${sprt}..${sprt}..${sprt}`);
-      const xlsxToJsonFilePath = `${filePath}Pharmaceutical Name with specific id.xlsx`;
+      const xlsxToJsonFilePath = `${filePath}Retail Allopathy Pharmacy Location.xlsx`;
 
       // const jsonFile = await csvToJson.csv().fromFile(`${filePath}${fileName}`);
       let xlsxToJson: any = [];
@@ -47,7 +47,7 @@ class InitialController {
       await xlsxj(
         {
           input: xlsxToJsonFilePath,
-          output: "pharmaceutical.json",
+          output: "pharmacyLocation.json",
         },
         function (err: any, result: any) {
           if (err) {

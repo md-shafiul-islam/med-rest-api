@@ -1,34 +1,63 @@
-import { Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Rating } from "./Rating";
 import { Review } from "./Review";
 
 @Entity("pharmacy")
 export class Pharmacy {
-    
-    @PrimaryGeneratedColumn()
-    id:number
-    
-    name:string
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    ownerName:string
+  @Column({ name: "name", nullable: true })
+  name: string;
 
-    phoneNo:string
+  @Column({ name: "owner_name", nullable: true })
+  ownerName: string;
 
-    country:string
+  @Column({ name: "alias_name", nullable: true })
+  aliasName: string;
 
-    division:string
+  @Column({ name: "phone_no", nullable: true })
+  phoneNo: string;
 
-    district:string
+  @Column({ name: "country", nullable: true })
+  country: string;
 
-    policeStation:string
+  @Column({ name: "division", nullable: true })
+  division: string;
 
-    postOffice:string
+  @Column({ name: "district", nullable: true })
+  district: string;
 
-    villageOrTown:string
+  @Column({ name: "details", type: "mediumtext", nullable: true })
+  details: string;
 
-    @OneToMany(() => Rating, (rating: Rating) => rating.pharmacy)
-    ratings:Rating[]
+  @Column({ name: "police_station", nullable: true })
+  policeStation: string;
 
-    @OneToMany(()=>Review, (review:Review)=>review.pharmacy)
-    reviews:Review[]
-} 
+  @Column({ name: "post_office", nullable: true })
+  postOffice: string;
+
+  @Column({ name: "village_town", nullable: true })
+  villageOrTown: string;
+
+  @Column({ name: "license_no", nullable: true })
+  licenseNo: string;
+
+  @Column({ name: "new_license_no", nullable: true })
+  newLicenseNo: string;
+
+  @Column({ name: "renewal", nullable: true })
+  renewal: string;
+
+  @Column({ name: "valid_upto", nullable: true })
+  validUpto: string;
+
+  @Column({ name: "upazila_name", nullable: true })
+  upazilaName: string;
+
+  @OneToMany(() => Rating, (rating: Rating) => rating.pharmacy)
+  ratings: Rating[];
+
+  @OneToMany(() => Review, (review: Review) => review.pharmacy)
+  reviews: Review[];
+}

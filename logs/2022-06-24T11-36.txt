@@ -1,3 +1,0 @@
-Geting All Generic, >> OBJ >> nullError All specification , >> OBJ >> {
-  "message": "No metadata for \"Generic\" was found."
-}

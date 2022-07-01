@@ -27,6 +27,26 @@ class MedicineController {
     }
   }
 
+  async getByAlias(req: Request, resp: Response) {
+    try {
+      apiWriteLog.info("Get Medicine Alias  ", req.params);
+      const medicine = await medicineService.getMedicineByAliasName(
+        req.params.aliasName
+      );
+      if (medicine) {
+        resp.status(200);
+        resp.send(respFormat(medicine, `Medicine found`, true));
+      } else {
+        resp.status(202);
+        resp.send(respFormat(null, "Medicine not found"));
+      }
+    } catch (error) {
+      apiWriteLog.error("Get Medicine Alias ", error);
+      resp.status(202);
+      resp.send(respFormat(null, "Medicine not found"));
+    }
+  }
+
   async getById(req: Request, resp: Response) {
     const id = req?.params?.id;
 

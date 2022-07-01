@@ -11,6 +11,7 @@ import { tagRoute } from "./tag.route";
 import { userRoute } from "./user.route";
 import { genericRoute } from "./generic.route";
 import { initialRoute } from "./initial.route";
+import { pharmacyRoute } from "./pharmacy.route";
 
 const userUrl = `/api/users`;
 const categoryUrl = `/api/categories`;
@@ -23,6 +24,7 @@ const reviewUrl = `/api/reviews`;
 const newsUrl = `/api/news`;
 const metaUrl = "/api/meta-datas";
 const tagUrl = "/api/tags";
+const pharmacyUrl = `/api/pharmacies`;
 
 export default (app: Application) => {
   app.use(userUrl, userRoute);
@@ -36,9 +38,8 @@ export default (app: Application) => {
   app.use(newsUrl, newsRoute);
   app.use(metaUrl, metaRoute);
   app.use(tagUrl, tagRoute);
-  app.use("/api/initial", initialRoute)
-
-  
+  app.use("/api/initial", initialRoute);
+  app.use(pharmacyUrl, pharmacyRoute);
 
   app.get("/", (req: Request, resp: Response) => {
     resp.sendStatus(200);

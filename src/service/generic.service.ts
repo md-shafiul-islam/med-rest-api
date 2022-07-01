@@ -15,6 +15,22 @@ class GenericService {
     }
   }
 
+  async getGenericByAliasName(
+    name: string | any
+  ): Promise<Generic | null | undefined> {
+    try {
+      const generic = await AppDataSource.createQueryBuilder(Generic, "generic")
+        .where("generic.aliasName= :aliasName", { aliasName: name })
+        .leftJoinAndSelect("generic.medicines", "medicine")
+        .leftJoinAndSelect("medicine.company", "company")
+        .getOne();
+      return generic;
+    } catch (error) {
+      apiWriteLog.error("Service Generic not found ", error);
+      return null;
+    }
+  }
+
   async save(generic: Partial<Generic>) {
     this.initRepository();
     if (generic) {
@@ -44,14 +60,17 @@ class GenericService {
   async getAll(): Promise<Generic[] | null | undefined> {
     this.initRepository();
     try {
-      const generics = await this.genericRepository
-        ?.createQueryBuilder("generic")
+      const generics = await AppDataSource.createQueryBuilder(
+        Generic,
+        "generic"
+      )
         .leftJoin("generic.medicines", "medicines")
         .loadRelationCountAndMap("generic.medicineSize", "generic.medicines")
+        .select(["generic.key", "generic.name", "generic.aliasName"])
         .getMany();
       return generics;
     } catch (err) {
-      apiWriteLog.error(`Error All specification `, err);
+      apiWriteLog.error(`Services Error All generics `, err);
       return null;
     }
   }
@@ -69,7 +88,7 @@ class GenericService {
 
         return updatespecification;
       } catch (error) {
-        apiWriteLog.error(`Update specification Error, `, error);
+        apiWriteLog.error(`Services Update Generic Error, `, error);
         return null;
       }
     }
@@ -84,7 +103,7 @@ class GenericService {
       });
       return specifications;
     } catch (err) {
-      apiWriteLog.error("Error All specification ", err);
+      apiWriteLog.error("Services Error Error All Generic ", err);
       return null;
     }
   }

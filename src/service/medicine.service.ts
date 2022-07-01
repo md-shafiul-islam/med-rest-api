@@ -19,12 +19,24 @@ class MedicineService {
     }
   }
 
-  async getMedicineByAllyName(aliasName: string) {
-    this.initRepository();
-    const medicine = await this.medicineRepository?.findOne({
-      where: { aliasName },
-    });
-    return medicine;
+  async getMedicineByAliasName(aliasName: string | any) {
+    try {
+      apiWriteLog.info("Services Medicine Alias name, ", aliasName);
+      const medicine = await AppDataSource.createQueryBuilder(
+        Medicine,
+        "medicine"
+      )
+        .where("medicine.aliasName= :aliasName", { aliasName: aliasName })
+        .leftJoinAndSelect("medicine.company", "company")
+        .leftJoinAndSelect("medicine.generic", "generic")
+        .leftJoinAndSelect("generic.medicines", "medicines")
+        .getOne();
+
+      return medicine;
+    } catch (error) {
+      apiWriteLog.error("Services Medicine ", error);
+      return null;
+    }
   }
 
   async save(medicine: Partial<Medicine>) {
@@ -157,10 +169,12 @@ class MedicineService {
     this.initRepository();
     try {
       //company: Company;
-      const medicines = await this.medicineRepository
-        ?.createQueryBuilder("medicine")
-        ?.leftJoinAndSelect("medicine.generic", "generic")
-        ?.leftJoinAndSelect("medicine.company", "company")
+      const medicines = await AppDataSource.createQueryBuilder(
+        Medicine,
+        "medicine"
+      )
+        .leftJoinAndSelect("medicine.generic", "generic")
+        .leftJoinAndSelect("medicine.company", "company")
         .limit(size)
         .offset(start)
         .getMany();
@@ -217,7 +231,7 @@ class MedicineService {
     nMedicine.form = medicine.form ? medicine.form : "";
     // nMedicine.generic = medicine.generic ? medicine.generic : "";
 
-    nMedicine.price = medicine.price ? Number(medicine.price) : 0;
+    nMedicine.price = medicine.price !== undefined ? medicine.price : "0.0";
     nMedicine.strength = medicine.strength ? medicine.strength : "";
 
     return nMedicine;

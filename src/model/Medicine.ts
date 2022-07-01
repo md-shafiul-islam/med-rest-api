@@ -38,8 +38,11 @@ export class Medicine {
   @Column({ name: "strength", type: "mediumtext" })
   strength: string;
 
-  @Column("double")
-  price: number;
+  @Column({ name: "price", length: 155 })
+  price: string;
+
+  @Column({ name: "use_for", length: 105 })
+  useFor: string;
 
   @Column({ name: "dra", type: "text", nullable: true })
   dra: string;
@@ -50,7 +53,7 @@ export class Medicine {
 
   @ManyToOne(() => User, (user: User) => user.id)
   @JoinColumn({ name: "user" })
-  user: User; 
+  user: User;
 
   @ManyToMany(() => ImageGallery, (image: ImageGallery) => image.id)
   @JoinTable({
