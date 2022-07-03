@@ -20,8 +20,8 @@ export class News {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({name:"ally_name"})
-  allyName:string;
+  @Column({name:"news_alias"})
+  newsAlias:string;
 
   @Column({ length: 205 })
   title: string;

@@ -13,6 +13,18 @@ class CompanyService {
     }
   }
 
+  async getCompanyByAliasName(aliasName: any) {
+    try {
+      const company = await this.companyRepository?.findOne({
+        where: { aliasName: aliasName },
+      });
+      return company;
+    } catch (err) {
+      apiWriteLog.error("Error getCompanyByAliasName ", err);
+      return null;
+    }
+  }
+
   async save(company: Partial<Company>) {
     this.initRepository();
     if (company) {
@@ -30,7 +42,9 @@ class CompanyService {
   async getCompanyById(id: number): Promise<Company | null | undefined> {
     this.initRepository();
     try {
-      const company = await this.companyRepository?.findOne({ where: { id: id } });
+      const company = await this.companyRepository?.findOne({
+        where: { id: id },
+      });
       return company;
     } catch (err) {
       apiWriteLog.error("Error getCompanyByID ", err);
@@ -64,7 +78,9 @@ class CompanyService {
             dbCompany.logoUrl = !esIsEmpty(company.logoUrl)
               ? company.logoUrl
               : dbCompany.logoUrl;
-            dbCompany.name = !esIsEmpty(company.name) ? company.name : dbCompany?.name;
+            dbCompany.name = !esIsEmpty(company.name)
+              ? company.name
+              : dbCompany?.name;
             dbCompany.tagLine = !esIsEmpty(company.tagLine)
               ? company.tagLine
               : dbCompany.tagLine;

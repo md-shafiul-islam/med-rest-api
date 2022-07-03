@@ -26,8 +26,8 @@ export class Post {
   @Generated("uuid")
   publicId: string;
 
-  @Column({ name: "ally_name", unique: true })
-  allyName: string;
+  @Column({ name: "alias_name", unique: true })
+  aliasName: string;
 
   @Column({ length: 150 })
   title: string;

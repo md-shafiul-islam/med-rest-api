@@ -68,11 +68,20 @@ class PharmacyService {
     }
   }
 
-  async getAllpharmacy(): Promise<Pharmacy[] | null | undefined> {
+  async getAllpharmacy(
+    start: number,
+    size: number
+  ): Promise<Pharmacy[] | null | undefined> {
     this.initRepository();
     try {
-      const categories = await this.pharmacyRepository?.find();
-      return categories;
+      const pharmacies = await AppDataSource.createQueryBuilder(
+        Pharmacy,
+        "pharmacy"
+      )
+        .offset(start)
+        .limit(size)
+        .getMany();
+      return pharmacies;
     } catch (err) {
       apiWriteLog.error(`Error All pharmacy `, err);
       return null;

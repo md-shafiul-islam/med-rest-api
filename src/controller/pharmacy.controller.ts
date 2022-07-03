@@ -2,12 +2,16 @@ import { Request, Response } from "express";
 import { apiWriteLog } from "../logger/writeLog";
 import { Pharmacy } from "../model/pharmacy";
 import { pharmacyService } from "../service/pharmacy.service";
+import { helperIsNumber } from "../utils/esHelper";
 import respFormat from "../utils/response/respFormat";
 
 class PharmacyController {
   async getAll(req: Request, resp: Response) {
     try {
-      const pharmacies = await pharmacyService.getAllpharmacy();
+      let { start = 0, size = 300 } = req.query;
+      start = helperIsNumber(start) ? 0 : Number(start);
+      size = helperIsNumber(size) ? 300 : Number(size);
+      const pharmacies = await pharmacyService.getAllpharmacy(start, size);
       resp.status(200);
       resp.send(
         respFormat(pharmacies, `${pharmacies?.length} Pharmacies found`, true)
@@ -21,8 +25,6 @@ class PharmacyController {
 
   async getByQuery(req: Request, resp: Response) {
     try {
-      console.log("getByQuery, req.params", req.params);
-      console.log("getByQuery, req.query", req.query);
       const { district, upazila_name, name } = req.query;
       const pharmacies = await pharmacyService.getByQuery({
         district,

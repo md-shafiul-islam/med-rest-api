@@ -1,10 +1,116 @@
 import { Request, Response } from "express";
 import { apiWriteLog } from "../logger/writeLog";
+import { Medicine } from "../model/Medicine";
 import { medicineService } from "../service/medicine.service";
 import { helperIsNumber } from "../utils/esHelper";
 import respFormat from "../utils/response/respFormat";
 
 class MedicineController {
+  async getAllByCommboQueryName(req: Request, resp: Response) {
+    try {
+      let medicines: Medicine[] = [];
+      apiWriteLog.info("medicines By Query ... ");
+      const medicinesResp = await medicineService.getAllByQueryComboName(
+        req.params?.name
+      );
+      if (medicinesResp) {
+        if (medicinesResp.length > 500) {
+          medicines = medicinesResp.slice(0, 500);
+        }
+
+        resp.status(200);
+        resp.send(
+          respFormat(
+            medicines,
+            `${medicines.length} medicines found by Query`,
+            true
+          )
+        );
+      } else {
+        resp.status(202);
+        resp.send(respFormat(medicines, "medicines not found by Query"));
+      }
+    } catch (error) {
+      apiWriteLog.error("medicines getAll Error ", error);
+      resp.status(202);
+      resp.send(respFormat(null, "medicines not found"));
+    }
+  }
+
+  async getAllByQueryName(req: Request, resp: Response) {
+    try {
+      apiWriteLog.info("medicines By Query ... ");
+      const medicines = await medicineService.getAllByQueryName(
+        req.params?.name
+      );
+      if (medicines) {
+        resp.status(200);
+        resp.send(
+          respFormat(
+            medicines,
+            `${medicines.length} medicines found by Query`,
+            true
+          )
+        );
+      } else {
+        resp.status(202);
+        resp.send(respFormat(medicines, "medicines not found by Query"));
+      }
+    } catch (error) {
+      apiWriteLog.error("medicines getAll Error ", error);
+      resp.status(202);
+      resp.send(respFormat(null, "medicines not found"));
+    }
+  }
+
+  async getAllName(req: Request, resp: Response) {
+    try {
+      const medicines = await medicineService.getAllByName(req.params?.name);
+      if (medicines) {
+        resp.status(200);
+        resp.send(
+          respFormat(
+            medicines,
+            `${medicines.length} medicines found by Generic`,
+            true
+          )
+        );
+      } else {
+        resp.status(202);
+        resp.send(respFormat(medicines, "medicines not found by Generic"));
+      }
+    } catch (error) {
+      apiWriteLog.error("medicines getAll Error ", error);
+      resp.status(202);
+      resp.send(respFormat(null, "medicines not found"));
+    }
+  }
+
+  async getAllGeneric(req: Request, resp: Response) {
+    const { generic } = req.params;
+
+    try {
+      const medicines = await medicineService.getAllByGeneric(generic);
+      if (medicines) {
+        resp.status(200);
+        resp.send(
+          respFormat(
+            medicines,
+            `${medicines.length} medicines found by Generic`,
+            true
+          )
+        );
+      } else {
+        resp.status(202);
+        resp.send(respFormat(medicines, "medicines not found by Generic"));
+      }
+    } catch (error) {
+      apiWriteLog.error("medicines getAll Error ", error);
+      resp.status(202);
+      resp.send(respFormat(null, "medicines not found"));
+    }
+  }
+
   async getAll(req: Request, resp: Response) {
     let { start = 0, size = 50 } = req.query;
     start = helperIsNumber(start) ? 0 : Number(start);

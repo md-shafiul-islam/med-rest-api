@@ -6,6 +6,31 @@ import { esIsEmpty } from "../utils/esHelper";
 import respFormat from "../utils/response/respFormat";
 
 class CompanyController {
+  
+  async getByAliasName(req: Request, resp: Response) {
+    try {
+      const aliasName = req?.params?.aliasName;
+
+      const company = await companyService.getCompanyByAliasName(aliasName);
+
+      if (company) {
+        resp.status(200);
+        resp.send(respFormat(company, "company Found", true));
+      } else {
+        resp.status(202);
+        resp.send(
+          respFormat(company, "company not Found by given alias name", false)
+        );
+      }
+    } catch (error) {
+      apiWriteLog.error("Company Alias name ", error);
+      resp.status(202);
+      resp.send(
+        respFormat(null, "company not Found by given Alias name", false)
+      );
+    }
+  }
+
   async getAll(req: Request, resp: Response) {
     apiWriteLog.info("Test writ file", { test: "Object is write" });
     const companys = await companyService.getAllCompany();

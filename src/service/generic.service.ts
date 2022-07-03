@@ -15,6 +15,33 @@ class GenericService {
     }
   }
 
+  async getGenericByQueryName(name: string) {
+    try {
+      if (!esIsEmpty(name)) {
+        if (name.length === 1) {
+          name = `${name}%`;
+        } else {
+          name = `%${name}%`;
+        }
+      }
+      apiWriteLog.info("Generic Query Name ", name);
+      const generics = await AppDataSource.createQueryBuilder(
+        Generic,
+        "generic"
+      )
+        .where("generic.name LIKE :name", { name: name })
+        .leftJoin("generic.medicines", "medicines")
+        .loadRelationCountAndMap("generic.medicineSize", "generic.medicines")
+        .select(["generic.key", "generic.name", "generic.aliasName"])
+        .orderBy("generic.name", "ASC")
+        .getMany();
+      return generics;
+    } catch (error) {
+      apiWriteLog.error("Service Generic Query name not found ", error);
+      return null;
+    }
+  }
+
   async getGenericByAliasName(
     name: string | any
   ): Promise<Generic | null | undefined> {

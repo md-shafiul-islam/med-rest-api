@@ -9,6 +9,8 @@ genericRoute.get(`/:id`, genericController.getById);
 
 genericRoute.get(`/alias/:aliasName`, genericController.getByAliasName);
 
+genericRoute.get(`/query/:name`, genericController.getByQueryName);
+
 genericRoute.post("/", genericController.add);
 
 genericRoute.put("/", genericController.update);

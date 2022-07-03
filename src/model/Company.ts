@@ -17,19 +17,19 @@ export class Company {
   @Column({ length: 205, nullable: true })
   name: string;
 
-  @Column({name:"alias_name"})
-  aliasName:string;
+  @Column({ name: "alias_name" })
+  aliasName: string;
 
-  @Column({name:"company_key", nullable: true})
-	companyKey:string;
+  @Column({ name: "company_key", nullable: true })
+  companyKey: string;
 
-  @Column({name:"description", type:"text", nullable: true})
+  @Column({ name: "description", type: "text", nullable: true })
   description: string;
 
-  @Column({name:"tag_line", length: 175, nullable: true })
+  @Column({ name: "tag_line", length: 175, nullable: true })
   tagLine: string;
 
-  @Column({ name: "logo_url", length: 205, nullable: true})
+  @Column({ name: "logo_url", length: 205, nullable: true })
   logoUrl: string;
 
   @Column({ name: "web_url", length: 105, nullable: true })
@@ -38,6 +38,6 @@ export class Company {
   @OneToMany(() => Medicine, (medicine: Medicine) => medicine.company)
   medicines: Medicine[];
 
-  @OneToMany(()=>News, (news:News)=>news.company)
+  @OneToMany(() => News, (news: News) => news.company)
   news: News[];
 }

@@ -2,9 +2,32 @@ import { Request, Response } from "express";
 import { apiWriteLog } from "../logger/writeLog";
 import { Generic } from "../model/Generic";
 import { genericService } from "../service/generic.service";
+import { esIsEmpty } from "../utils/esHelper";
 import respFormat from "../utils/response/respFormat";
 
 class GenericController {
+  async getByQueryName(req: Request, resp: Response) {
+    try {
+      if (req.params) {
+        const name = req.params.name !== undefined ? req.params.name : "";
+        const generics = await genericService.getGenericByQueryName(name);
+
+        if (generics) {
+          resp.status(200);
+          resp.send(
+            respFormat(generics, `${generics?.length} Generic(s) found`, true)
+          );
+        } else {
+          resp.status(202);
+          resp.send(respFormat(null, "generic (s) not found by Query Name"));
+        }
+      }
+    } catch (error) {
+      apiWriteLog.error("generic by alias Error ", error);
+      resp.status(202);
+      resp.send(respFormat(null, "generic not found"));
+    }
+  }
   async getByAliasName(req: Request, resp: Response) {
     try {
       if (req.params) {

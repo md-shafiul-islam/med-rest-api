@@ -1,4 +1,4 @@
-import { EntityManager, Repository, UpdateResult } from "typeorm";
+import { Brackets, EntityManager, Repository, UpdateResult } from "typeorm";
 import { AppDataSource } from "../database/AppDataSource";
 import { apiWriteLog } from "../logger/writeLog";
 import { Comment } from "../model/Comment";
@@ -9,6 +9,8 @@ import { Medicine } from "../model/Medicine";
 import { Tag } from "../model/Tag";
 import { User } from "../model/User";
 import { esIsEmpty } from "../utils/esHelper";
+import { genericService } from "./generic.service";
+import { ParsedQs } from "qs";
 
 class MedicineService {
   private medicineRepository: Repository<Medicine> | null = null;
@@ -16,6 +18,131 @@ class MedicineService {
   private initRepository(): void {
     if (this.medicineRepository === null) {
       this.medicineRepository = AppDataSource.getRepository(Medicine);
+    }
+  }
+
+  async getAllByQueryComboName(name: string) {
+    try {
+      apiWriteLog.info("Services Medicine Name Query, ", name);
+
+      if (!esIsEmpty(name)) {
+        if (name.length === 1) {
+          name = `${name}%`;
+        } else {
+          name = `%${name}%`;
+        }
+
+        const medicines = await AppDataSource.createQueryBuilder(
+          Medicine,
+          "medicine"
+        )
+          .leftJoinAndSelect("medicine.generic", "generic")
+
+          .where("medicine.name LIKE :name", { name })
+          .orWhere("generic.name LIKE :name", { name })
+          .select([
+            "medicine.name",
+            "medicine.aliasName",
+            "medicine.strength",
+            "medicine.form",
+            "medicine.price",
+            "generic.name",
+          ])
+          .orderBy("medicine.name", "ASC")
+          .getMany();
+
+        return medicines;
+      }
+
+      return null;
+    } catch (error) {
+      apiWriteLog.error("Services Medicine Combo Query  Name ", error);
+      return null;
+    }
+  }
+
+  async getAllByQueryName(name: string) {
+    try {
+      apiWriteLog.info("Services Medicine Name Query, ", name);
+
+      if (!esIsEmpty(name)) {
+        if (name.length === 1) {
+          name = `${name}%`;
+        } else {
+          name = `%${name}%`;
+        }
+
+        const medicines = await AppDataSource.createQueryBuilder(
+          Medicine,
+          "medicine"
+        )
+          .where("medicine.name LIKE :name", { name })
+          .leftJoinAndSelect("medicine.generic", "generic")
+          .select([
+            "medicine.name",
+            "medicine.aliasName",
+            "medicine.strength",
+            "medicine.form",
+            "medicine.price",
+            "generic.name",
+          ])
+          .orderBy("medicine.name", "ASC")
+          .getMany();
+
+        return medicines;
+      }
+
+      return null;
+    } catch (error) {
+      apiWriteLog.error("Services Medicine Query Name ", error);
+      return null;
+    }
+  }
+
+  async getAllByName(name: string) {
+    try {
+      apiWriteLog.info("Services Medicine name, ", name);
+
+      const medicines = await AppDataSource.createQueryBuilder(
+        Medicine,
+        "medicine"
+      )
+        .where("medicine.name= :name", { name })
+        .leftJoinAndSelect("medicine.company", "company")
+        .leftJoinAndSelect("medicine.generic", "generic")
+        .leftJoinAndSelect("generic.medicines", "medicines")
+        .getMany();
+
+      return medicines;
+    } catch (error) {
+      apiWriteLog.error("Services Medicine ", error);
+      return null;
+    }
+  }
+
+  async getAllByGeneric(name: string | any) {
+    try {
+      apiWriteLog.info("Services Medicine generic name, ", name);
+
+      const generic = await genericService.getGenericByAliasName(name);
+
+      if (generic) {
+        const medicine = await AppDataSource.createQueryBuilder(
+          Medicine,
+          "medicine"
+        )
+          .where("medicine.generic= :generic", { generic: generic.id })
+          .leftJoinAndSelect("medicine.company", "company")
+          .leftJoinAndSelect("medicine.generic", "generic")
+          .leftJoinAndSelect("generic.medicines", "medicines")
+          .getMany();
+
+        return medicine;
+      }
+      return null;
+    } catch (error) {
+      apiWriteLog.error("Services Medicine ", error);
+      return null;
     }
   }
 
