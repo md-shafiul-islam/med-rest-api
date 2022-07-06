@@ -21,9 +21,10 @@ class MedicineService {
     }
   }
 
-  async getAllByQueryComboName(name: string) {
+  async getAllByQueryComboName(name: string, limit: number | any = 50) {
     try {
-      apiWriteLog.info("Services Medicine Name Query, ", name);
+      console.log("Services medicines By Query Combo ... ", name);
+      apiWriteLog.info("Services Medicine Name Combo Query, ", name);
 
       if (!esIsEmpty(name)) {
         if (name.length === 1) {
@@ -31,7 +32,7 @@ class MedicineService {
         } else {
           name = `%${name}%`;
         }
-
+        console.log("Befor Query Name ", name);
         const medicines = await AppDataSource.createQueryBuilder(
           Medicine,
           "medicine"
@@ -48,6 +49,7 @@ class MedicineService {
             "medicine.price",
             "generic.name",
           ])
+          .limit(limit)
           .orderBy("medicine.name", "ASC")
           .getMany();
 
@@ -61,7 +63,7 @@ class MedicineService {
     }
   }
 
-  async getAllByQueryName(name: string) {
+  async getAllByQueryName(name: string, limit: number | any = 50) {
     try {
       apiWriteLog.info("Services Medicine Name Query, ", name);
 
@@ -87,6 +89,7 @@ class MedicineService {
             "generic.name",
           ])
           .orderBy("medicine.name", "ASC")
+          .limit(limit)
           .getMany();
 
         return medicines;
@@ -296,15 +299,40 @@ class MedicineService {
     this.initRepository();
     try {
       //company: Company;
+      let medicines = [];
+      if (size > 0) {
+        medicines = await AppDataSource.createQueryBuilder(Medicine, "medicine")
+          .leftJoinAndSelect("medicine.generic", "generic")
+          .leftJoinAndSelect("medicine.company", "company")
+          .limit(size)
+          .offset(start)
+          .getMany();
+      } else {
+        medicines = await AppDataSource.createQueryBuilder(Medicine, "medicine")
+          .leftJoinAndSelect("medicine.generic", "generic")
+          .leftJoinAndSelect("medicine.company", "company")
+          .getMany();
+      }
+
+      return medicines;
+    } catch (err) {
+      apiWriteLog.error(`Error All Medicine `, err);
+      return null;
+    }
+  }
+
+  async getAllForSearch(): Promise<Medicine[] | null | undefined> {
+    this.initRepository();
+    try {
+      //company: Company;
       const medicines = await AppDataSource.createQueryBuilder(
         Medicine,
         "medicine"
       )
         .leftJoinAndSelect("medicine.generic", "generic")
-        .leftJoinAndSelect("medicine.company", "company")
-        .limit(size)
-        .offset(start)
+        .select(["medicine.name", "medicine.form", "generic.name"])
         .getMany();
+
       return medicines;
     } catch (err) {
       apiWriteLog.error(`Error All Medicine `, err);

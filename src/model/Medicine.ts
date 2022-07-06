@@ -1,6 +1,7 @@
 import {
   Column,
   Entity,
+  Index,
   Generated,
   JoinColumn,
   JoinTable,
@@ -29,6 +30,7 @@ export class Medicine {
   @Column({ name: "alias_name", nullable: true })
   aliasName: string;
 
+  @Index("medicine_name_idx")
   @Column({ name: "name" })
   name: string;
 

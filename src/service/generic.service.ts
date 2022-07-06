@@ -15,7 +15,7 @@ class GenericService {
     }
   }
 
-  async getGenericByQueryName(name: string) {
+  async getGenericByQueryName(name: string, limit:number | any = 50) {
     try {
       if (!esIsEmpty(name)) {
         if (name.length === 1) {
@@ -34,6 +34,7 @@ class GenericService {
         .loadRelationCountAndMap("generic.medicineSize", "generic.medicines")
         .select(["generic.key", "generic.name", "generic.aliasName"])
         .orderBy("generic.name", "ASC")
+        .limit(limit)
         .getMany();
       return generics;
     } catch (error) {

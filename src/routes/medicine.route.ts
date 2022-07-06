@@ -10,6 +10,8 @@ medicinesRoute.get(`/:id`, medicineController.getById);
 
 medicinesRoute.get(`/alias/:aliasName`, medicineController.getByAlias);
 
+medicinesRoute.get(`/search/items`, medicineController.getAllForSearch);
+
 medicinesRoute.get(`/generic/:generic`, medicineController.getAllGeneric);
 
 medicinesRoute.get(`/medicine/:name`, medicineController.getAllName);

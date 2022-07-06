@@ -10,7 +10,10 @@ class GenericController {
     try {
       if (req.params) {
         const name = req.params.name !== undefined ? req.params.name : "";
-        const generics = await genericService.getGenericByQueryName(name);
+        const generics = await genericService.getGenericByQueryName(
+          name,
+          req.query.limit
+        );
 
         if (generics) {
           resp.status(200);

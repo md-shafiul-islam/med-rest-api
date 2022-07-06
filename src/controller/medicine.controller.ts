@@ -9,13 +9,19 @@ class MedicineController {
   async getAllByCommboQueryName(req: Request, resp: Response) {
     try {
       let medicines: Medicine[] = [];
-      apiWriteLog.info("medicines By Query ... ");
+      apiWriteLog.info("medicines By Query Combo ... ", req.params?.name);
+      const limit = req.query.limit;
+      console.log("Controller medicines By Query Combo ... ", req.params?.name, " Query ", req.query);
       const medicinesResp = await medicineService.getAllByQueryComboName(
-        req.params?.name
+        req.params?.name, limit
       );
+
+      console.log("Combo Medicine Return form Services ", medicinesResp);
       if (medicinesResp) {
         if (medicinesResp.length > 500) {
-          medicines = medicinesResp.slice(0, 500);
+          medicines = medicinesResp.slice(500);
+        } else {
+          medicines = medicinesResp;
         }
 
         resp.status(200);
@@ -39,9 +45,9 @@ class MedicineController {
 
   async getAllByQueryName(req: Request, resp: Response) {
     try {
-      apiWriteLog.info("medicines By Query ... ");
+      apiWriteLog.info("medicines By Query Name ... ", req.query);
       const medicines = await medicineService.getAllByQueryName(
-        req.params?.name
+        req.params?.name, req.query?.limit
       );
       if (medicines) {
         resp.status(200);
@@ -55,6 +61,29 @@ class MedicineController {
       } else {
         resp.status(202);
         resp.send(respFormat(medicines, "medicines not found by Query"));
+      }
+    } catch (error) {
+      apiWriteLog.error("medicines getAll Error ", error);
+      resp.status(202);
+      resp.send(respFormat(null, "medicines not found"));
+    }
+  }
+
+  async getAllForSearch(req:Request, resp:Response){
+    try {
+      const medicines = await medicineService.getAllForSearch();
+      if (medicines) {
+        resp.status(200);
+        resp.send(
+          respFormat(
+            medicines,
+            `${medicines.length} medicines found by Generic`,
+            true
+          )
+        );
+      } else {
+        resp.status(202);
+        resp.send(respFormat(medicines, "medicines not found by Generic"));
       }
     } catch (error) {
       apiWriteLog.error("medicines getAll Error ", error);
