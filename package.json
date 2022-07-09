@@ -1,10 +1,10 @@
 {
   "name": "med-backend",
   "version": "1.0.0",
-  "main": "./server.ts",
+  "main": "./src/server.ts",
   "license": "MIT",
   "scripts": {
-    "dev": "nodemon --config nodemon.json ./server.ts"
+    "dev": "nodemon --config nodemon.json ./src/server.ts"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",

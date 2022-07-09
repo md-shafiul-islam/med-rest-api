@@ -3,7 +3,7 @@ import "reflect-metadata";
 import express, { Application } from "express";
 import { DataSource } from "typeorm";
 
-import config from "../config/default";
+import config from "./config/default";
 import log from "./logger/index";
 import routes from "./routes";
 import { AppDataSource } from "./database/AppDataSource";
