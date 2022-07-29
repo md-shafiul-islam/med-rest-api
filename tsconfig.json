@@ -2,7 +2,7 @@
   "compilerOptions": {
     "emitDecoratorMetadata": true,
     "esModuleInterop": true,
-    "target": "es5",
+    "target": "ESNext",
     "module": "commonjs",
     "lib": ["es5", "es6", "es2017", "es2018", "ESNext"],
     "declaration": true,
@@ -20,7 +20,10 @@
     "inlineSources": true,
     "experimentalDecorators": true,
     "strictPropertyInitialization": false,
-    "typeRoots": ["./node_modules/@types"]
+    "rootDir": "./",
+    "outDir": "./dist/",
+    "typeRoots": ["./node_modules/@types"],
+    "moduleResolution": "node"
   },
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "./dist/**/*"]
 }

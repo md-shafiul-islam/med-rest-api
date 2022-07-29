@@ -1,10 +1,12 @@
 {
   "name": "med-backend",
   "version": "1.0.0",
-  "main": "./src/server.ts",
+  "main": "./server.js",
   "license": "MIT",
   "scripts": {
-    "dev": "nodemon --config nodemon.json ./src/server.ts"
+    "dev": "nodemon --config nodemon.json ./server.ts",
+    "start": "node ./dist/server.js",
+    "build": "tsc -p ."
   },
   "dependencies": {
     "bcrypt": "^5.0.1",
@@ -24,7 +26,7 @@
     "pino-pretty": "^7.5.4",
     "random": "^3.0.6",
     "reflect-metadata": "^0.1.13",
-    "typeorm": "^0.3.2",
+    "typeorm": "^0.3.7",
     "xlsx-to-json": "^0.3.0",
     "yup": "^0.32.11"
   },

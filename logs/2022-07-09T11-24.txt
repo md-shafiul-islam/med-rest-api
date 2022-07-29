@@ -1,3 +1,0 @@
-medicines By Query Name ... , >> OBJ >> {
-  "msg": "medicines By Query Name ... "
-}Services Medicine Name Query, , >> OBJ >> "ac"

@@ -38,17 +38,7 @@ class CommentService {
     }
   }
 
-  async getCommentByProductAsTree(id: number) {
-    try {
-      const comments = await this.commentRepositoryTree.find({
-        where: { product: { id } },
-      });
-      return comments;
-    } catch (error) {
-      apiWriteLog.error("Product Comment not found ", error);
-      return null;
-    }
-  }
+  
 }
 
 export const commentService = new CommentService();

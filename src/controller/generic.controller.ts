@@ -33,10 +33,10 @@ class GenericController {
   }
   async getByAliasName(req: Request, resp: Response) {
     try {
-      if (req.params) {
-        const aliasName =
-          req.params.aliasName !== undefined ? req.params.aliasName : "";
-        const generic = await genericService.getGenericByAliasName(aliasName);
+      if (req.query) {
+        const generic = await genericService.getGenericByAliasName(
+          req.query.name
+        );
 
         if (generic) {
           resp.status(200);

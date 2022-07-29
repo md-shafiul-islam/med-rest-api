@@ -15,7 +15,7 @@ class GenericService {
     }
   }
 
-  async getGenericByQueryName(name: string, limit:number | any = 50) {
+  async getGenericByQueryName(name: string, limit: number | any = 50) {
     try {
       if (!esIsEmpty(name)) {
         if (name.length === 1) {
@@ -47,6 +47,7 @@ class GenericService {
     name: string | any
   ): Promise<Generic | null | undefined> {
     try {
+      console.log("Generic ALias Name ", name);
       const generic = await AppDataSource.createQueryBuilder(Generic, "generic")
         .where("generic.aliasName= :aliasName", { aliasName: name })
         .leftJoinAndSelect("generic.medicines", "medicine")

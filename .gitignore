@@ -11,6 +11,8 @@
 
 
 /out/
+/dist/
+/logs/
 
 # production
 /build
