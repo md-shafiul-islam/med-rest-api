@@ -3,7 +3,7 @@ import { AppDataSource } from "../database/AppDataSource";
 import { apiWriteLog } from "../logger/writeLog";
 import { ImageGallery } from "../model/ImageGallery";
 import { MetaDeta } from "../model/MetaData";
-import { News } from "../model/news";
+import { News } from "../model/News";
 import { Tag } from "../model/Tag";
 import { esIsEmpty } from "../utils/esHelper";
 
