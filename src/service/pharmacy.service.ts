@@ -3,7 +3,6 @@ import { AppDataSource } from "../database/AppDataSource";
 import { apiWriteLog } from "../logger/writeLog";
 import { Pharmacy } from "../model/Pharmacy";
 
-import { esIsEmpty } from "../utils/esHelper";
 
 class PharmacyService {
   private pharmacyRepository: Repository<Pharmacy> | null = null;

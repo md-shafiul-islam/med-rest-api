@@ -1,11 +1,12 @@
 import { Request, Response } from "express";
+import { News } from "../model/News";
+import { categoryService } from "../service/category.service";
+import { companyService } from "../service/company.service";
 import { newsService } from "../service/news.service";
 import respFormat from "../utils/response/respFormat";
 
 class NewController {
   async getAll(req: Request, resp: Response) {
-
-    
     const news = await newsService.getAll();
     if (news) {
       resp.status(200);
@@ -30,10 +31,10 @@ class NewController {
   }
 
   async add(req: Request, resp: Response) {
-
     try {
-      const nNews = await newsService.save(req.body);
+      const { title, newsAlias, category, company, metaDatas, content } = req.body;
 
+      const nNews = await newsService.save({metaDatas, category, company, title, newsAlias, content});
       resp.status(201);
       resp.send(respFormat(nNews, "News Save Or Added", true));
     } catch (error) {
@@ -43,7 +44,6 @@ class NewController {
   }
 
   async update(req: Request, resp: Response) {
-    
     const updateNews = await newsService.update(req.body);
 
     if (updateNews !== undefined && updateNews !== null) {

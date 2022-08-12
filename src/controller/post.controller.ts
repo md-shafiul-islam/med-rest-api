@@ -55,7 +55,6 @@ class PostController {
 
   async update(req: Request, resp: Response) {
     try {
-
       const update = await postService.update(req.body);
 
       if (update !== undefined && update !== null) {

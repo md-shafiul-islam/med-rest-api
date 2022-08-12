@@ -1,7 +1,6 @@
 import { Repository, UpdateResult } from "typeorm";
 import { AppDataSource } from "../database/AppDataSource";
 import { apiWriteLog } from "../logger/writeLog";
-import { Company } from "../model/Company";
 import { Pharmacy } from "../model/Pharmacy";
 import { Review } from "../model/Review";
 import { esIsEmpty } from "../utils/esHelper";

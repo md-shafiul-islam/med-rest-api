@@ -30,7 +30,9 @@ class MetadataService {
   async getById(id: number): Promise<MetaDeta | null | undefined> {
     this.initRepository();
     try {
-      const metadata = await this.metadataRepository?.findOne({ where: { id: id } });
+      const metadata = await this.metadataRepository?.findOne({
+        where: { id: id },
+      });
       return metadata;
     } catch (err) {
       apiWriteLog.error("Error getmetadataByID ", err);
@@ -49,7 +51,9 @@ class MetadataService {
     }
   }
 
-  async update(metadata: Partial<MetaDeta>): Promise<UpdateResult | null | undefined> {
+  async update(
+    metadata: Partial<MetaDeta>
+  ): Promise<UpdateResult | null | undefined> {
     this.initRepository();
     if (!esIsEmpty(metadata)) {
       try {

@@ -4,7 +4,6 @@ import { apiWriteLog } from "../logger/writeLog";
 import { ImageGallery } from "../model/ImageGallery";
 import { MetaDeta } from "../model/MetaData";
 import { Post } from "../model/Post";
-import { Tag } from "../model/Tag";
 import { esIsEmpty } from "../utils/esHelper";
 
 class PostService {
@@ -25,15 +24,13 @@ class PostService {
       await queryRunner.startTransaction();
       try {
         const metaDetas: MetaDeta[] = [];
-        const tags: Tag[] = [];
         const images: ImageGallery[] = [];
 
         const nPost: Post = new Post();
         Object.assign(nPost, post);
         nPost.images = [];
-        nPost.tags = [];
         nPost.metaDatas = [];
-        
+
         post.metaDatas &&
           post.metaDatas.forEach(async (metaData, idx) => {
             if (metaData.id > 0) {
@@ -45,19 +42,6 @@ class PostService {
 
         const dbMetas = await queryRunner.manager.save(metaDetas);
         nPost.addAllMetaData(dbMetas);
-
-        post.tags &&
-          post.tags.forEach(async (tag, idx) => {
-            if (tag.id > 0) {
-              nPost.addTag(tag);
-            } else {
-              tags.push(queryRunner.manager.create(Tag, tag));
-            }
-          });
-
-        const dbTags = await queryRunner.manager.save(tags);
-
-        nPost.addAllTag(dbTags);
 
         post.images &&
           post.images.forEach(async (image, idx) => {
@@ -71,7 +55,6 @@ class PostService {
         nPost.addAllImage(dbImages);
 
         apiWriteLog.info(`Post image Size ${nPost.images.length}`);
-        apiWriteLog.info(`Post Tag Size ${nPost.tags.length}`);
         apiWriteLog.info(`Post metaDatas Size ${nPost.metaDatas.length}`);
 
         const initPost = queryRunner.manager.create(Post, nPost);

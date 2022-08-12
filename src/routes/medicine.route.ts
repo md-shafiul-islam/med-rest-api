@@ -1,4 +1,3 @@
-
 import express from "express";
 import { medicineController } from "../controller/medicine.controller";
 
@@ -16,11 +15,14 @@ medicinesRoute.get(`/generic/:generic`, medicineController.getAllGeneric);
 
 medicinesRoute.get(`/medicine/:name`, medicineController.getAllName);
 
+medicinesRoute.get(`/count/all`, medicineController.getAllMedicinesCount);
+
 medicinesRoute.get(`/query/:name`, medicineController.getAllByQueryName);
 
-medicinesRoute.get(`/comb-query/:name`, medicineController.getAllByCommboQueryName);
-
-
+medicinesRoute.get(
+  `/comb-query/:name`,
+  medicineController.getAllByCommboQueryName
+);
 
 medicinesRoute.post("/", medicineController.add);
 

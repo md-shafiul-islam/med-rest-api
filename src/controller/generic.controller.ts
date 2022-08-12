@@ -1,11 +1,10 @@
 import { Request, Response } from "express";
 import { apiWriteLog } from "../logger/writeLog";
-import { Generic } from "../model/Generic";
 import { genericService } from "../service/generic.service";
-import { esIsEmpty } from "../utils/esHelper";
 import respFormat from "../utils/response/respFormat";
 
 class GenericController {
+  
   async getByQueryName(req: Request, resp: Response) {
     try {
       if (req.params) {

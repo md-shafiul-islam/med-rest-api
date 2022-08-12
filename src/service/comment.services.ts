@@ -37,8 +37,6 @@ class CommentService {
       return null;
     }
   }
-
-  
 }
 
 export const commentService = new CommentService();

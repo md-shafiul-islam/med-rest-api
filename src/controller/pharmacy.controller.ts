@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { apiWriteLog } from "../logger/writeLog";
-import { Pharmacy } from "../model/pharmacy";
+import { Pharmacy } from "../model/Pharmacy";
 import { pharmacyService } from "../service/pharmacy.service";
 import { helperIsNumber } from "../utils/esHelper";
 import respFormat from "../utils/response/respFormat";

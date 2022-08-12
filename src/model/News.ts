@@ -12,7 +12,6 @@ import { Company } from "./Company";
 import { Category } from "./Category";
 import { MetaDeta } from "./MetaData";
 import { ImageGallery } from "./ImageGallery";
-import { Tag } from "./Tag";
 import { User } from "./User";
 
 @Entity({ name: "news" })
@@ -37,14 +36,6 @@ export class News {
     inverseJoinColumn: { name: "meta_data", referencedColumnName: "id" },
   })
   metaDatas: MetaDeta[];
-
-  @ManyToMany(() => Tag, (tag: Tag) => tag.news)
-  @JoinTable({
-    name: "news_tags",
-    joinColumn: { name: "news", referencedColumnName: "id" },
-    inverseJoinColumn: { name: "tag", referencedColumnName: "id" },
-  })
-  tags: Tag[];
 
   @Column({ type: "text" })
   content: string;
@@ -98,17 +89,5 @@ export class News {
     }
     this.metaDatas.push.apply(this.metaDatas, metas);
   }
-  addTag(tag: Tag) {
-    if (!Array.isArray(this.tags)) {
-      this.tags = new Array<Tag>();
-    }
-    this.tags.push(tag);
-  }
-
-  addAllTag(tgs: Tag[]) {
-    if (!Array.isArray(this.tags)) {
-      this.tags = new Array<Tag>();
-    }
-    this.tags.push.apply(this.tags, tgs);
-  }
+  
 }

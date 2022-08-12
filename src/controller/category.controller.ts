@@ -5,9 +5,7 @@ import { categoryService } from "../service/category.service";
 import respFormat from "../utils/response/respFormat";
 
 class CategoryController {
-  getByAliasName(arg0: string, getByAliasName: any) {
-      throw new Error("Method not implemented.");
-  }
+
   async getAll(req: Request, resp: Response) {
     try {
       const categories = await categoryService.getAllCategory();

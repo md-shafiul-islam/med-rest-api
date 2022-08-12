@@ -2,11 +2,9 @@ import { Request, Response } from "express";
 import { apiWriteLog } from "../logger/writeLog";
 import { Company } from "../model/Company";
 import { companyService } from "../service/company.service";
-import { esIsEmpty } from "../utils/esHelper";
 import respFormat from "../utils/response/respFormat";
 
 class CompanyController {
-  
   async getByAliasName(req: Request, resp: Response) {
     try {
       const aliasName = req?.params?.aliasName;
@@ -57,11 +55,11 @@ class CompanyController {
   }
 
   async add(req: Request, resp: Response) {
-    console.log("company Add Request Body ", req.body);
+    // console.log("company Add Request Body ", req.body);
 
     const companyReq: Partial<Company> = req.body;
 
-    console.log("After Partial company Add Request Body ", companyReq);
+    // console.log("After Partial company Add Request Body ", companyReq);
 
     const { name, description, tagLine, logoUrl, website } = req.body;
 
@@ -74,7 +72,7 @@ class CompanyController {
         website,
       });
 
-      console.log("company added Response ", ncompany);
+      // console.log("company added Response ", ncompany);
 
       resp.status(201);
       resp.send(respFormat(ncompany, "company Save Or Added", true));

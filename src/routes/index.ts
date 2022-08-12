@@ -7,7 +7,6 @@ import { postRoute } from "./post.route";
 import { medicinesRoute } from "./medicine.route";
 import { ratingRoute } from "./rating.route";
 import { reviewRoute } from "./review.route";
-import { tagRoute } from "./tag.route";
 import { userRoute } from "./user.route";
 import { genericRoute } from "./generic.route";
 import { initialRoute } from "./initial.route";
@@ -37,7 +36,6 @@ export default (app: Application) => {
   app.use(reviewUrl, reviewRoute);
   app.use(newsUrl, newsRoute);
   app.use(metaUrl, metaRoute);
-  app.use(tagUrl, tagRoute);
   app.use("/api/initial", initialRoute);
   app.use(pharmacyUrl, pharmacyRoute);
 

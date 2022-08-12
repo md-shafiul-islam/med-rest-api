@@ -68,8 +68,12 @@ class CategoryService {
     }
   }
 
-  async updateCategory(name:string, description:string, id:number, parent:Category) {
-
+  async updateCategory(
+    name: string,
+    description: string,
+    id: number,
+    parent: Category
+  ) {
     this.initRepository();
     try {
       const dbCategory = await this.categoryRepository?.findOneBy({ id });
@@ -85,7 +89,7 @@ class CategoryService {
           dbCategory.name = name;
         }
 
-        if(!esIsEmpty(parent)){
+        if (!esIsEmpty(parent)) {
           dbCategory.parent = parent;
         }
 

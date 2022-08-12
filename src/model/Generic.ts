@@ -11,7 +11,6 @@ import {
 import { Category } from "./Category";
 import { Medicine } from "./Medicine";
 import { MetaDeta } from "./MetaData";
-import { Tag } from "./Tag";
 
 @Entity({ name: "generic" })
 export class Generic {
@@ -24,20 +23,6 @@ export class Generic {
   @ManyToOne(() => Category, (category: Category) => category.id)
   @JoinColumn({ name: "category" })
   category: Category;
-
-  @ManyToMany(() => Tag, (tag) => tag.generics)
-  @JoinTable({
-    name: "generic_tag",
-    joinColumn: {
-      name: "generic",
-      referencedColumnName: "id",
-    },
-    inverseJoinColumn: {
-      name: "tag",
-      referencedColumnName: "id",
-    },
-  })
-  tags: Tag[];
 
   @ManyToMany(() => MetaDeta, (metadata: MetaDeta) => metadata.generics, {
     cascade: true,
@@ -107,25 +92,11 @@ export class Generic {
   @Column({ name: "reconstitution", type: "mediumtext", nullable: true })
   reconstitution: string;
 
-  addTag(tag: Tag) {
-    if (!Array.isArray(this.tags)) {
-      this.tags = new Array<Tag>();
-    }
-    this.tags.push(tag);
-  }
-
   addMetaData(meta: MetaDeta) {
     if (!Array.isArray(this.metaDatas)) {
       this.metaDatas = new Array<MetaDeta>();
     }
     this.metaDatas.push(meta);
-  }
-
-  addAllTag(tgs: Tag[]) {
-    if (!Array.isArray(this.tags)) {
-      this.tags = new Array<Tag>();
-    }
-    this.tags.push.apply(this.tags, tgs);
   }
 
   addAllMetaData(metas: MetaDeta[]) {

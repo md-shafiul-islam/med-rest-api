@@ -1,16 +1,12 @@
 import { Brackets, EntityManager, Repository, UpdateResult } from "typeorm";
 import { AppDataSource } from "../database/AppDataSource";
 import { apiWriteLog } from "../logger/writeLog";
-import { Comment } from "../model/Comment";
 import { ImageGallery } from "../model/ImageGallery";
 import { MetaDeta } from "../model/MetaData";
-import { Post } from "../model/Post";
 import { Medicine } from "../model/Medicine";
-import { Tag } from "../model/Tag";
 import { User } from "../model/User";
 import { esIsEmpty } from "../utils/esHelper";
 import { genericService } from "./generic.service";
-import { ParsedQs } from "qs";
 
 class MedicineService {
   private medicineRepository: Repository<Medicine> | null = null;
@@ -21,9 +17,19 @@ class MedicineService {
     }
   }
 
+  async getMedicinesCount() {
+    try {
+      this.initRepository();
+      const resp = await this.medicineRepository?.count({});
+      return resp;
+    } catch (error) {
+      apiWriteLog.error("Methods Count Error, ", error);
+      return null;
+    }
+  }
+
   async getAllByQueryComboName(name: string, limit: number | any = 50) {
     try {
-      console.log("Services medicines By Query Combo ... ", name);
       apiWriteLog.info("Services Medicine Name Combo Query, ", name);
 
       if (!esIsEmpty(name)) {
@@ -32,7 +38,6 @@ class MedicineService {
         } else {
           name = `%${name}%`;
         }
-        console.log("Befor Query Name ", name);
         const medicines = await AppDataSource.createQueryBuilder(
           Medicine,
           "medicine"
@@ -181,7 +186,6 @@ class MedicineService {
 
       try {
         const metaDatas: MetaDeta[] = [];
-        const tags: Tag[] = [];
 
         let user = await queryRunner.manager.findOne(User, {
           where: { id: 1 },
@@ -204,40 +208,12 @@ class MedicineService {
           MetaDeta,
           metaDatas
         );
-        console.log(
-          "After Save Metadat Array ",
-          JSON.stringify(metaDataList, null, 2)
-        );
-        //Save new Tags
-        if (medicine.tags) {
-          medicine.tags.forEach(async (item, idx) => {
-            if (item !== undefined) {
-              if (item.id > 0 && medicine.addTag !== undefined) {
-                nMedicine.addTag(item);
 
-                item.medicines = [nMedicine];
-              } else {
-                const insTag = queryRunner.manager.create(Tag, item);
-                tags.push(insTag);
-              }
-            }
-          });
-        }
-
-        const dbTags = await queryRunner.manager.save(Tag, tags);
-        console.log(
-          "Current Tags After Save ",
-          JSON.stringify(dbTags, null, 2)
-        );
-
-        nMedicine.addAllTag(dbTags);
         nMedicine.addAllMetaData(metaDataList);
 
         if (user !== null) {
           nMedicine.user = user;
         }
-
-        console.log("CUrrent Medicine ", JSON.stringify(nMedicine, null, 2));
 
         const insMedicine = queryRunner.manager.create(Medicine, nMedicine);
         saveMedicine = await queryRunner.manager.save(insMedicine);
@@ -268,7 +244,6 @@ class MedicineService {
         apiWriteLog.error("Medicine Save Error ", error);
         await queryRunner.rollbackTransaction();
       } finally {
-        console.log("Query Runner ", queryRunner.isReleased);
         if (queryRunner.isReleased) {
           await queryRunner.release();
         }
@@ -293,25 +268,78 @@ class MedicineService {
   }
 
   async getAll(
-    size: number = 30,
-    start: number = 0
+    size: number = -1,
+    start: number = 0,
+    letter: string | any = ""
   ): Promise<Medicine[] | null | undefined> {
     this.initRepository();
     try {
       //company: Company;
+      console.log(
+        "Get ALl Medicine Start ",
+        start,
+        " Size, ",
+        size,
+        " Letter ",
+        letter
+      );
       let medicines = [];
-      if (size > 0) {
-        medicines = await AppDataSource.createQueryBuilder(Medicine, "medicine")
-          .leftJoinAndSelect("medicine.generic", "generic")
-          .leftJoinAndSelect("medicine.company", "company")
-          .limit(size)
-          .offset(start)
-          .getMany();
+      if (!esIsEmpty(letter)) {
+        if (letter === "num") {
+          medicines = await AppDataSource.createQueryBuilder(
+            Medicine,
+            "medicine"
+          )
+            .leftJoinAndSelect("medicine.generic", "generic")
+            .leftJoinAndSelect("medicine.company", "company")
+            .where(`medicine.name regexp '^[0-9]+'`)
+            .getMany();
+          return medicines;
+        }
+
+        letter = `${letter}%`;
+
+        if (size > 0) {
+          medicines = await AppDataSource.createQueryBuilder(
+            Medicine,
+            "medicine"
+          )
+            .leftJoinAndSelect("medicine.generic", "generic")
+            .leftJoinAndSelect("medicine.company", "company")
+            .where(`medicine.name LIKE :name`, { name: letter })
+            .limit(size)
+            .offset(start)
+            .getMany();
+        } else {
+          medicines = await AppDataSource.createQueryBuilder(
+            Medicine,
+            "medicine"
+          )
+            .leftJoinAndSelect("medicine.generic", "generic")
+            .leftJoinAndSelect("medicine.company", "company")
+            .where(`medicine.name LIKE :name`, { name: letter })
+            .getMany();
+        }
       } else {
-        medicines = await AppDataSource.createQueryBuilder(Medicine, "medicine")
-          .leftJoinAndSelect("medicine.generic", "generic")
-          .leftJoinAndSelect("medicine.company", "company")
-          .getMany();
+        if (size > 0) {
+          medicines = await AppDataSource.createQueryBuilder(
+            Medicine,
+            "medicine"
+          )
+            .leftJoinAndSelect("medicine.generic", "generic")
+            .leftJoinAndSelect("medicine.company", "company")
+            .limit(size)
+            .offset(start)
+            .getMany();
+        } else {
+          medicines = await AppDataSource.createQueryBuilder(
+            Medicine,
+            "medicine"
+          )
+            .leftJoinAndSelect("medicine.generic", "generic")
+            .leftJoinAndSelect("medicine.company", "company")
+            .getMany();
+        }
       }
 
       return medicines;

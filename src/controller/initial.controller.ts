@@ -2,10 +2,9 @@ import { Request, Response } from "express";
 import fs from "fs";
 import path from "path";
 
-const Papa = require("papaparse");
-const csvToJson = require("csvtojson");
+// const csvToJson = require("csvtojson");
 
-const xlsxj = require("xlsx-to-json");
+// const xlsxj = require("xlsx-to-json");
 
 import { apiWriteLog } from "../logger/writeLog";
 import { Category } from "../model/Category";
@@ -22,7 +21,7 @@ class InitialController {
     const filePath = path.join(__dirname, `${sprt}..${sprt}..${sprt}`);
 
     const csvToJsonFilePath = `${filePath}${fileName}`;
-    const csvToJsonFile = await csvToJson.csv().fromFile(csvToJsonFilePath);
+    const csvToJsonFile = null; //await csvToJson.csv().fromFile(csvToJsonFilePath);
     return csvToJsonFile;
   }
 
@@ -31,10 +30,7 @@ class InitialController {
   }
 
   async saveAllGeniric(req: Request, resp: Response) {
-    
-    console.log("Converting ... ");
     try {
-
       const sprt = path.sep;
       const fileName = `Retail Allopathy Pharmacy Location.xlsx`;
 
@@ -43,22 +39,21 @@ class InitialController {
 
       // const jsonFile = await csvToJson.csv().fromFile(`${filePath}${fileName}`);
       let xlsxToJson: any = [];
-      
-      await xlsxj(
-        {
-          input: xlsxToJsonFilePath,
-          output: "pharmacyLocation.json",
-        },
-        function (err: any, result: any) {
-          if (err) {
-            console.error(err);
-          } else {
-            xlsxToJson = result;
-            console.log("result ", result)
 
-          }
-        }
-      );
+      // await xlsxj(
+      //   {
+      //     input: xlsxToJsonFilePath,
+      //     output: "pharmacyLocation.json",
+      //   },
+      //   function (err: any, result: any) {
+      //     if (err) {
+      //       console.error(err);
+      //     } else {
+      //       xlsxToJson = result;
+      //       console.log("result ", result);
+      //     }
+      //   }
+      // );
 
       const generics: Generic[] = [];
 
@@ -80,31 +75,6 @@ class InitialController {
     }
   }
 
-  async saveAllGenericItem() {
-    try {
-      const csvToJsonFile = await this.getFileAndConvertToJSON(
-        `Final_output2.0_Med_Generic_Wise.csv`
-      );
-
-      const generics: Generic[] = [];
-
-      if (Array.isArray(csvToJsonFile)) {
-        csvToJsonFile.forEach((item, idx) => {
-          let initGeneric = new Generic();
-          Object.assign(initGeneric, item);
-          generics.push(initGeneric);
-          // genericService.saveGenericUsingJson(initGeneric);
-          console.log("Curent Item idx", idx);
-        });
-      }
-
-      console.log("CSV TO JSON File length ", generics.length);
-      return csvToJsonFile;
-    } catch (error) {
-      console.log("CSV TO JSON File init Error", error);
-    }
-  }
-
   async saveAllMedicine(req: Request, resp: Response) {
     try {
       const jsonFile = this.getFileAndConvertToJSON(
@@ -121,7 +91,6 @@ class InitialController {
         });
       }
 
-      console.log("CSV TO JSON File length ", generics.length);
       this.writJosnFile(generics, "generics");
       resp.send(respFormat(generics, `Genric size ${generics.length}`, true));
     } catch (error) {
@@ -187,10 +156,9 @@ class InitialController {
     if (arrayData) {
       try {
         fs.writeFile(`${name}.json`, arrayData, (m) => {
-          console.log("After Write File ", m);
         });
       } catch (error) {
-        console.log("Json file write failed ", error);
+        apiWriteLog.error("Json file write failed ", error);
       }
     }
   }

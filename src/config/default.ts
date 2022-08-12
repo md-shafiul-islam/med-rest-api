@@ -1,5 +1,5 @@
 const portNum =
-  process.env.PORT !== undefined ? parseInt(process.env.PORT) : 4500;
+  process.env.PORT !== undefined ? parseInt(process.env.PORT) : 1010;
 
 export default {
   appPort: portNum,

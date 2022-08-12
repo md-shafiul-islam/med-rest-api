@@ -4,7 +4,6 @@ import { apiWriteLog } from "../logger/writeLog";
 import { ImageGallery } from "../model/ImageGallery";
 import { MetaDeta } from "../model/MetaData";
 import { News } from "../model/News";
-import { Tag } from "../model/Tag";
 import { esIsEmpty } from "../utils/esHelper";
 
 class NewsService {
@@ -16,59 +15,48 @@ class NewsService {
     }
   }
 
-  async save(news: Partial<News>) {
+  async save(news: any) {
     let saveNews: News | null = null;
 
-    if(news){
-
-      const nNews:News = new News();
+    if (news) {
+      const nNews: News = new News();
+      news.category = null;
+      news.company = null;
 
       Object.assign(nNews, nNews);
       nNews.images = [];
       nNews.metaDatas = [];
-      nNews.tags = [];
-      
-      const queryRunner =  AppDataSource.createQueryRunner();
+
+      const queryRunner = AppDataSource.createQueryRunner();
       await queryRunner.connect();
       queryRunner.startTransaction();
       try {
-        
-        const images:ImageGallery[] = [];
-        const metadatas:MetaDeta[] = [];
-        const tags:Tag[] = [];
+        const images: ImageGallery[] = [];
+        const metadatas: MetaDeta[] = [];
 
-        news.images&&news.images.map((image)=>{
-          if(image.id > 0){
-            nNews.addImage(image);
-          }else{
-            images.push(queryRunner.manager.create(ImageGallery, image));
-          }
-        });
+        news.images &&
+          news.images.map((image: ImageGallery) => {
+            if (image.id > 0) {
+              nNews.addImage(image);
+            } else {
+              images.push(queryRunner.manager.create(ImageGallery, image));
+            }
+          });
 
         const dbImages = await queryRunner.manager.save(images);
         nNews.addAllImage(dbImages);
 
-        news.metaDatas&&news.metaDatas.map((meta)=>{
-          if(meta.id > 0){
-            nNews.addMetaData(meta);
-          }else{
-            metadatas.push(queryRunner.manager.create(MetaDeta, meta));
-          }
-        })
+        news.metaDatas &&
+          news.metaDatas.map((meta:MetaDeta) => {
+            if (meta.id > 0) {
+              nNews.addMetaData(meta);
+            } else {
+              metadatas.push(queryRunner.manager.create(MetaDeta, meta));
+            }
+          });
 
         const dbMetas = await queryRunner.manager.save(metadatas);
         nNews.addAllMeta(dbMetas);
-
-        news.tags&&news.tags.map((tag)=>{
-          if(tag.id > 0){
-            nNews.addTag(tag);
-          }else{
-            tags.push(queryRunner.manager.create(Tag, tag));
-          }
-        })
-
-        const dbTags = await queryRunner.manager.save(tags);
-        nNews.addAllTag(dbTags);
 
         saveNews = await queryRunner.manager.save(nNews);
 
@@ -76,8 +64,8 @@ class NewsService {
       } catch (error) {
         apiWriteLog.error(`News Save Error `, error);
         await queryRunner.rollbackTransaction();
-      }finally{
-        if(queryRunner.isReleased){
+      } finally {
+        if (queryRunner.isReleased) {
           await queryRunner.release();
         }
       }

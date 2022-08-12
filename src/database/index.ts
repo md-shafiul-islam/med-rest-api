@@ -5,11 +5,11 @@ export const dbConnectionOption = (): DataSourceOptions => {
   // console.log("__dirname, ", __dirname + "/../model/*{.js,.ts}");
   return {
     type: "mysql",
-    host: "bullet.itnut.net",
+    host: "localhost",
     port: 3306,
-    username: "qlosprmw_md_shafiul",
-    password: "p~!T3Lj+-8Y5",
-    database: "qlosprmw_bc_bd",
+    username: "med_shafiul",
+    password: "01725686029Sa",
+    database: "med",
     logging: false,
     synchronize: true,
     entities: [join(__dirname, "..", "model", "*{.js,.ts}")],

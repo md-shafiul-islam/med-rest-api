@@ -15,7 +15,6 @@ import { Company } from "./Company";
 import { Category } from "./Category";
 import { ImageGallery } from "./ImageGallery";
 import { MetaDeta } from "./MetaData";
-import { Tag } from "./Tag";
 import { User } from "./User";
 import { Generic } from "./Generic";
 
@@ -65,14 +64,6 @@ export class Medicine {
   })
   images: ImageGallery[];
 
-  @ManyToMany(() => Tag, (tag: Tag) => tag.medicines, { cascade: true })
-  @JoinTable({
-    name: "medicine_tag",
-    joinColumn: { name: "medicine", referencedColumnName: "id" },
-    inverseJoinColumn: { name: "tag", referencedColumnName: "id" },
-  })
-  tags: Tag[];
-
   @ManyToMany(() => MetaDeta, (metadata: MetaDeta) => metadata.medicines, {
     cascade: true,
   })
@@ -87,13 +78,6 @@ export class Medicine {
   @JoinColumn({ name: "company" })
   company: Company;
 
-  addTag(tag: Tag) {
-    if (!Array.isArray(this.tags)) {
-      this.tags = new Array<Tag>();
-    }
-    this.tags.push(tag);
-  }
-
   addMetaData(meta: MetaDeta) {
     if (!Array.isArray(this.metaDatas)) {
       this.metaDatas = new Array<MetaDeta>();
@@ -107,13 +91,6 @@ export class Medicine {
     }
 
     this.images.push(image);
-  }
-
-  addAllTag(tgs: Tag[]) {
-    if (!Array.isArray(this.tags)) {
-      this.tags = new Array<Tag>();
-    }
-    this.tags.push.apply(this.tags, tgs);
   }
 
   addAllMetaData(metas: MetaDeta[]) {

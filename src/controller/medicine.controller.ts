@@ -6,17 +6,29 @@ import { helperIsNumber } from "../utils/esHelper";
 import respFormat from "../utils/response/respFormat";
 
 class MedicineController {
+  async getAllMedicinesCount(req: Request, resp: Response) {
+    try {
+      const medicineResp = await medicineService.getMedicinesCount();
+      console.log("Medicine Count ", medicineResp);
+      resp.status(200);
+      resp.send(respFormat(medicineResp, ` medicines Count`, true));
+    } catch (error) {
+      apiWriteLog.error("Medicine Count Error ", error);
+      resp.status(202);
+      resp.send(respFormat(null, "medicines Count failed"));
+    }
+  }
+
   async getAllByCommboQueryName(req: Request, resp: Response) {
     try {
       let medicines: Medicine[] = [];
       apiWriteLog.info("medicines By Query Combo ... ", req.params?.name);
       const limit = req.query.limit;
-      console.log("Controller medicines By Query Combo ... ", req.params?.name, " Query ", req.query);
       const medicinesResp = await medicineService.getAllByQueryComboName(
-        req.params?.name, limit
+        req.params?.name,
+        limit
       );
 
-      console.log("Combo Medicine Return form Services ", medicinesResp);
       if (medicinesResp) {
         if (medicinesResp.length > 500) {
           medicines = medicinesResp.slice(500);
@@ -47,7 +59,8 @@ class MedicineController {
     try {
       apiWriteLog.info("medicines By Query Name ... ", req.query);
       const medicines = await medicineService.getAllByQueryName(
-        req.params?.name, req.query?.limit
+        req.params?.name,
+        req.query?.limit
       );
       if (medicines) {
         resp.status(200);
@@ -69,7 +82,7 @@ class MedicineController {
     }
   }
 
-  async getAllForSearch(req:Request, resp:Response){
+  async getAllForSearch(req: Request, resp: Response) {
     try {
       const medicines = await medicineService.getAllForSearch();
       if (medicines) {
@@ -141,11 +154,12 @@ class MedicineController {
   }
 
   async getAll(req: Request, resp: Response) {
-    let { start = 0, size = 50 } = req.query;
+    let { start = 0, size = -1, letter="" } = req.query;
     start = helperIsNumber(start) ? 0 : Number(start);
-    size = helperIsNumber(size) ? 50 : Number(size);
+    size = helperIsNumber(size) ? -1 : Number(size);
+    console.log("Page Query ", start, " Size ", size);
     try {
-      const medicines = await medicineService.getAll(size, start);
+      const medicines = await medicineService.getAll(size, start, letter);
       if (medicines) {
         resp.status(200);
         resp.send(
@@ -164,9 +178,12 @@ class MedicineController {
 
   async getByAlias(req: Request, resp: Response) {
     try {
-      apiWriteLog.info("Get Medicine Alias  ", req.params);
+      // console.log("Get Medicine Alias Query  ", req.query)
+
+      apiWriteLog.info("Get Medicine Alias  ", req.query);
+
       const medicine = await medicineService.getMedicineByAliasName(
-        req.params.aliasName
+        req.query.name
       );
       if (medicine) {
         resp.status(200);

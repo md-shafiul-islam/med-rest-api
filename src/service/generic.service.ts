@@ -3,7 +3,6 @@ import { AppDataSource } from "../database/AppDataSource";
 import { apiWriteLog } from "../logger/writeLog";
 import { Generic } from "../model/Generic";
 import { MetaDeta } from "../model/MetaData";
-import { Tag } from "../model/Tag";
 import { esIsEmpty } from "../utils/esHelper";
 
 class GenericService {
@@ -47,7 +46,6 @@ class GenericService {
     name: string | any
   ): Promise<Generic | null | undefined> {
     try {
-      console.log("Generic ALias Name ", name);
       const generic = await AppDataSource.createQueryBuilder(Generic, "generic")
         .where("generic.aliasName= :aliasName", { aliasName: name })
         .leftJoinAndSelect("generic.medicines", "medicine")
@@ -146,17 +144,6 @@ class GenericService {
 
     try {
       const metaDatas: MetaDeta[] = [];
-      const tags: Tag[] = [];
-      //Save New Metatdata
-
-      let tag = new Tag();
-      tag.name = generic.name;
-      tag.value = generic.aliasName;
-      tag.generics = [generic];
-
-      let initTag = queryRunner.manager.create(Tag, tag);
-      initTag = await queryRunner.manager.save(Tag, initTag);
-      generic.addTag(initTag);
 
       let metadata = new MetaDeta();
       metadata.name = "description";
@@ -184,7 +171,6 @@ class GenericService {
       apiWriteLog.error("Generic using Tag & Meta Save Error ", error);
       await queryRunner.rollbackTransaction();
     } finally {
-      console.log("Query Runner ", queryRunner.isReleased);
       if (queryRunner.isReleased) {
         await queryRunner.release();
       }
@@ -202,20 +188,11 @@ class GenericService {
 
     try {
       const metaDatas: MetaDeta[] = [];
-      const tags: Tag[] = [];
+
       //Save New Metatdata
       const queryGenerics: Generic[] = [];
       apiWriteLog.info(`Generic Save Befor loop ${generics.length} `);
       generics.forEach((item, idx) => {
-        let tag = new Tag();
-        tag.name = item.name;
-        tag.value = item.aliasName;
-        tag.generics = [item];
-
-        let initTag = queryRunner.manager.create(Tag, tag);
-        queryRunner.manager.save(initTag);
-        item.addTag(initTag);
-
         let metadata = new MetaDeta();
         metadata.name = "description";
         metadata.content = item.indication;
@@ -246,7 +223,6 @@ class GenericService {
       apiWriteLog.error("Generic using Tag & Meta Save Error ", error);
       await queryRunner.rollbackTransaction();
     } finally {
-      console.log("Query Runner ", queryRunner.isReleased);
       if (queryRunner.isReleased) {
         await queryRunner.release();
       }

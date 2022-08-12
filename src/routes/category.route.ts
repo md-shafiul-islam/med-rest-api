@@ -1,4 +1,3 @@
-
 import express from "express";
 import { categoryController } from "../controller/category.controller";
 

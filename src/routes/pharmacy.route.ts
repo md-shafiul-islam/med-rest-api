@@ -1,7 +1,5 @@
-
 import express from "express";
 import { pharmacyController } from "../controller/pharmacy.controller";
-
 
 const pharmacyRoute = express.Router();
 
