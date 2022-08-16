@@ -19,8 +19,8 @@ export class News {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({name:"news_alias"})
-  newsAlias:string;
+  @Column({ name: "news_alias" })
+  newsAlias: string;
 
   @Column({ length: 205 })
   title: string;
@@ -40,6 +40,9 @@ export class News {
   @Column({ type: "text" })
   content: string;
 
+  @Column({ name: "short_content", type: "text" })
+  shortContent: string;
+
   @ManyToMany(() => ImageGallery, (img: ImageGallery) => img.news)
   @JoinTable({
     name: "news_images",
@@ -49,7 +52,7 @@ export class News {
   images: ImageGallery[];
 
   @ManyToOne(() => Company, (company: Company) => company.id)
-  @JoinColumn({name:"company", referencedColumnName:"id"})
+  @JoinColumn({ name: "company", referencedColumnName: "id" })
   company: Company;
 
   @ManyToOne(() => Category, (cat: Category) => cat.id)
@@ -59,7 +62,7 @@ export class News {
   @CreateDateColumn()
   crateDate: Date;
 
-  @Column({ name: "update_date", type: "datetime" })
+  @Column({ name: "update_date", type: "datetime", nullable: true })
   updateDate: Date;
 
   addImage(image: ImageGallery) {
@@ -89,5 +92,4 @@ export class News {
     }
     this.metaDatas.push.apply(this.metaDatas, metas);
   }
-  
 }

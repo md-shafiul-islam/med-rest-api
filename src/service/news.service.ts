@@ -1,3 +1,4 @@
+import { ParamsDictionary } from "express-serve-static-core";
 import { Repository, UpdateResult } from "typeorm";
 import { AppDataSource } from "../database/AppDataSource";
 import { apiWriteLog } from "../logger/writeLog";
@@ -5,6 +6,9 @@ import { ImageGallery } from "../model/ImageGallery";
 import { MetaDeta } from "../model/MetaData";
 import { News } from "../model/News";
 import { esIsEmpty } from "../utils/esHelper";
+import { categoryService } from "./category.service";
+import { commentService } from "./comment.services";
+import { companyService } from "./company.service";
 
 class NewsService {
   private newsRepository: Repository<News> | null = null;
@@ -20,13 +24,28 @@ class NewsService {
 
     if (news) {
       const nNews: News = new News();
+
+      const category = await categoryService.getCategoryById(news.category);
+      const company = await companyService.getCompanyById(news.company);
+
       news.category = null;
       news.company = null;
 
-      Object.assign(nNews, nNews);
       nNews.images = [];
       nNews.metaDatas = [];
 
+      if (category !== null && category !== undefined) {
+        nNews.category = category;
+      }
+
+      if (company !== null && company !== undefined) {
+        nNews.company = company;
+      }
+      const { title, newsAlias, content, shortContent } = news;
+      nNews.content = content;
+      nNews.shortContent = shortContent;
+      nNews.newsAlias = newsAlias;
+      nNews.title = title;
       const queryRunner = AppDataSource.createQueryRunner();
       await queryRunner.connect();
       queryRunner.startTransaction();
@@ -47,7 +66,7 @@ class NewsService {
         nNews.addAllImage(dbImages);
 
         news.metaDatas &&
-          news.metaDatas.map((meta:MetaDeta) => {
+          news.metaDatas.map((meta: MetaDeta) => {
             if (meta.id > 0) {
               nNews.addMetaData(meta);
             } else {
@@ -58,6 +77,7 @@ class NewsService {
         const dbMetas = await queryRunner.manager.save(metadatas);
         nNews.addAllMeta(dbMetas);
 
+        console.log("Befor Save news ", JSON.stringify(nNews, null, 2));
         saveNews = await queryRunner.manager.save(nNews);
 
         await queryRunner.commitTransaction();
@@ -85,10 +105,36 @@ class NewsService {
     }
   }
 
-  async getAll(): Promise<News[] | null | undefined> {
+  async getByAlias(alias: any) {
     this.initRepository();
     try {
-      const news = await this.newsRepository?.find();
+      const news = await AppDataSource.createQueryBuilder(News, "news")
+        .leftJoinAndSelect("news.images", "images")
+        .leftJoinAndSelect("news.metaDatas", "metaDatas")
+        .leftJoinAndSelect("news.company", "company")
+        .leftJoinAndSelect("news.category", "category")
+        .getOne();
+      return news;
+    } catch (err) {
+      apiWriteLog.error("Error getNewsByAlias ", err);
+      return null;
+    }
+  }
+
+  async getAll(query: any): Promise<News[] | null | undefined> {
+    this.initRepository();
+    try {
+      const { start, size, order } = query;
+      const odr = order === "desc" ? "DESC" : "ASC";
+      const news = await AppDataSource.createQueryBuilder(News, "news")
+        .leftJoinAndSelect("news.images", "images")
+        .orderBy("news.crateDate", odr)
+        .limit(size)
+        .offset(start)
+        .getMany();
+
+      console.log("News Response ", news);
+
       return news;
     } catch (err) {
       apiWriteLog.error(`Error All news `, err);

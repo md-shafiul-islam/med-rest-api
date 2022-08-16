@@ -7,6 +7,8 @@ newsRoute.get("/", newsController.getAll);
 
 newsRoute.get(`/:id`, newsController.getById);
 
+newsRoute.get(`/alias/name?`, newsController.getByAliasName);
+
 newsRoute.post("/", newsController.add);
 
 newsRoute.put("/", newsController.update);

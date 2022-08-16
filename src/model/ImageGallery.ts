@@ -28,6 +28,9 @@ export class ImageGallery {
   @Column({ length: 205 })
   location: string;
 
+  @Column({ name: "image_url", length: 250 })
+  imageUrl: string;
+
   @ManyToOne(() => Medicine, (medicine: Medicine) => medicine.images, {
     nullable: true,
   })
