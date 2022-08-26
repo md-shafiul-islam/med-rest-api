@@ -51,6 +51,7 @@ class GenericService {
         .leftJoinAndSelect("generic.medicines", "medicine")
         .leftJoinAndSelect("medicine.company", "company")
         .getOne();
+      console.log("Generic By Alias Name ", generic);
       return generic;
     } catch (error) {
       apiWriteLog.error("Service Generic not found ", error);

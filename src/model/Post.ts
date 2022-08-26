@@ -31,8 +31,11 @@ export class Post {
   @Column({ length: 150 })
   title: string;
 
-  @Column("text")
+  @Column("longtext")
   content: string;
+
+  @Column({name:"short_content", type:"text"})
+  shortContent:string;
 
   @ManyToOne(() => User, (user: User) => user.id, { nullable: true })
   @JoinColumn({ name: "approve_user" })

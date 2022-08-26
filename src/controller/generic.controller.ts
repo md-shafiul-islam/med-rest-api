@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
+import { isEmpty } from "lodash";
 import { apiWriteLog } from "../logger/writeLog";
 import { genericService } from "../service/generic.service";
 import respFormat from "../utils/response/respFormat";
 
 class GenericController {
-  
   async getByQueryName(req: Request, resp: Response) {
     try {
       if (req.params) {
@@ -31,12 +31,12 @@ class GenericController {
     }
   }
   async getByAliasName(req: Request, resp: Response) {
-    try {
-      if (req.query) {
-        const generic = await genericService.getGenericByAliasName(
-          req.query.name
-        );
+    
+    const query = decodeURI(req.url.substring(16));
 
+    try {
+      if (!isEmpty(query)) {
+        const generic = await genericService.getGenericByAliasName(query);
         if (generic) {
           resp.status(200);
           resp.send(respFormat(generic, `Generic found`, true));

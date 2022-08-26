@@ -1,4 +1,4 @@
-import { Brackets, EntityManager, Repository, UpdateResult } from "typeorm";
+import { Repository, UpdateResult } from "typeorm";
 import { AppDataSource } from "../database/AppDataSource";
 import { apiWriteLog } from "../logger/writeLog";
 import { ImageGallery } from "../model/ImageGallery";
@@ -53,6 +53,7 @@ class MedicineService {
             "medicine.form",
             "medicine.price",
             "generic.name",
+            "generic.aliasName",
           ])
           .limit(limit)
           .orderBy("medicine.name", "ASC")
@@ -165,6 +166,7 @@ class MedicineService {
         .leftJoinAndSelect("medicine.company", "company")
         .leftJoinAndSelect("medicine.generic", "generic")
         .leftJoinAndSelect("generic.medicines", "medicines")
+        .leftJoinAndSelect("medicines.company", "medicines.company")
         .getOne();
 
       return medicine;
@@ -358,7 +360,12 @@ class MedicineService {
         "medicine"
       )
         .leftJoinAndSelect("medicine.generic", "generic")
-        .select(["medicine.name", "medicine.form", "generic.name"])
+        .select([
+          "medicine.name",
+          "medicine.aliasName",
+          "medicine.form",
+          "generic.name",
+        ])
         .getMany();
 
       return medicines;

@@ -38,8 +38,8 @@ export class Category {
   @TreeParent()
   parent: Category;
 
-  @OneToMany(() => Generic, (generic: Generic) => generic.category)
-  generics: Generic[];
+  @OneToMany(() => Medicine, (medicine: Medicine) => medicine.category)
+  medicine: Medicine[];
 
   @OneToMany(() => Post, (post: Post) => post.category)
   posts: Post[];

@@ -40,6 +40,20 @@ class PostController {
     }
   }
 
+  async getByAliasName(req: Request, resp: Response) {
+    console.log("req?.params ", req?.params);
+    console.log("req?. Query ", req?.query);
+    const blog = await postService.getByAlias(req?.query?.alias);
+
+    if (blog) {
+      resp.status(200);
+      resp.send(respFormat(blog, "Blog Found", true));
+    } else {
+      resp.status(202);
+      resp.send(respFormat(blog, "Blog not Found by given alias name", true));
+    }
+  }
+
   async add(req: Request, resp: Response) {
     try {
       const post = await postService.save(req.body);

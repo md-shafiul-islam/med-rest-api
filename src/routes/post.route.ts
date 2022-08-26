@@ -7,6 +7,8 @@ postRoute.get("/", postController.getAll);
 
 postRoute.get(`/:id`, postController.getById);
 
+postRoute.get(`/alias/name`, postController.getByAliasName);
+
 postRoute.post("/", postController.add);
 
 postRoute.put("/", postController.update);

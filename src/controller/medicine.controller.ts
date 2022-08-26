@@ -154,7 +154,7 @@ class MedicineController {
   }
 
   async getAll(req: Request, resp: Response) {
-    let { start = 0, size = -1, letter="" } = req.query;
+    let { start = 0, size = -1, letter = "" } = req.query;
     start = helperIsNumber(start) ? 0 : Number(start);
     size = helperIsNumber(size) ? -1 : Number(size);
     console.log("Page Query ", start, " Size ", size);
@@ -179,12 +179,10 @@ class MedicineController {
   async getByAlias(req: Request, resp: Response) {
     try {
       // console.log("Get Medicine Alias Query  ", req.query)
+      let query = req.url.substring(17);
+      query = decodeURI(query);
 
-      apiWriteLog.info("Get Medicine Alias  ", req.query);
-
-      const medicine = await medicineService.getMedicineByAliasName(
-        req.query.name
-      );
+      const medicine = await medicineService.getMedicineByAliasName(query);
       if (medicine) {
         resp.status(200);
         resp.send(respFormat(medicine, `Medicine found`, true));

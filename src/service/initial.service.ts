@@ -1,4 +1,4 @@
-import { Repository, TreeRepository, UpdateResult } from "typeorm";
+import { Repository, TreeRepository } from "typeorm";
 import { AppDataSource } from "../database/AppDataSource";
 import { apiWriteLog } from "../logger/writeLog";
 import { Category } from "../model/Category";

@@ -1,7 +1,6 @@
-import { Repository, TreeRepository, UpdateResult } from "typeorm";
+import { Repository } from "typeorm";
 import { AppDataSource } from "../database/AppDataSource";
 import { apiWriteLog } from "../logger/writeLog";
-import { Category } from "../model/Category";
 import { ImageGallery } from "../model/ImageGallery";
 
 import { esIsEmpty } from "../utils/esHelper";

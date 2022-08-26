@@ -19,11 +19,7 @@ export class Generic {
 
   @Column({ name: "generic_key", type: "mediumtext", nullable: true })
   key: string;
-
-  @ManyToOne(() => Category, (category: Category) => category.id)
-  @JoinColumn({ name: "category" })
-  category: Category;
-
+  
   @ManyToMany(() => MetaDeta, (metadata: MetaDeta) => metadata.generics, {
     cascade: true,
   })

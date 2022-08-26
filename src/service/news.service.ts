@@ -1,4 +1,3 @@
-import { ParamsDictionary } from "express-serve-static-core";
 import { Repository, UpdateResult } from "typeorm";
 import { AppDataSource } from "../database/AppDataSource";
 import { apiWriteLog } from "../logger/writeLog";
@@ -7,8 +6,8 @@ import { MetaDeta } from "../model/MetaData";
 import { News } from "../model/News";
 import { esIsEmpty } from "../utils/esHelper";
 import { categoryService } from "./category.service";
-import { commentService } from "./comment.services";
 import { companyService } from "./company.service";
+import { userService } from "./user.service";
 
 class NewsService {
   private newsRepository: Repository<News> | null = null;
@@ -25,6 +24,8 @@ class NewsService {
     if (news) {
       const nNews: News = new News();
 
+      const user = await userService.getUserByPublicId(news?.user?.id);
+
       const category = await categoryService.getCategoryById(news.category);
       const company = await companyService.getCompanyById(news.company);
 
@@ -40,6 +41,10 @@ class NewsService {
 
       if (company !== null && company !== undefined) {
         nNews.company = company;
+      }
+
+      if (user !== undefined && user !== null) {
+        nNews.user = user;
       }
       const { title, newsAlias, content, shortContent } = news;
       nNews.content = content;
@@ -107,12 +112,15 @@ class NewsService {
 
   async getByAlias(alias: any) {
     this.initRepository();
+    console.log("Get News By Alias Name ", alias);
     try {
       const news = await AppDataSource.createQueryBuilder(News, "news")
         .leftJoinAndSelect("news.images", "images")
         .leftJoinAndSelect("news.metaDatas", "metaDatas")
         .leftJoinAndSelect("news.company", "company")
         .leftJoinAndSelect("news.category", "category")
+        .leftJoinAndSelect("news.user", "user")
+        .where({ newsAlias: alias })
         .getOne();
       return news;
     } catch (err) {

@@ -5,6 +5,9 @@ import { ImageGallery } from "../model/ImageGallery";
 import { MetaDeta } from "../model/MetaData";
 import { Post } from "../model/Post";
 import { esIsEmpty } from "../utils/esHelper";
+import { categoryService } from "./category.service";
+import { companyService } from "./company.service";
+import { userService } from "./user.service";
 
 class PostService {
   private postRepository: Repository<Post> | null = null;
@@ -15,7 +18,7 @@ class PostService {
     }
   }
 
-  async save(post: Post) {
+  async save(post: any) {
     let resp: Post | null = null;
     if (post) {
       const queryRunner = AppDataSource.createQueryRunner();
@@ -26,13 +29,44 @@ class PostService {
         const metaDetas: MetaDeta[] = [];
         const images: ImageGallery[] = [];
 
+        const {
+          aliasName,
+          title,
+          content,
+          company,
+          category,
+          shortContent,
+          user,
+        } = post;
+
+        const pUser = await userService.getUserByPublicId(user?.id);
+        const cat = await categoryService.getCategoryById(category);
+        const comp = await companyService.getCompanyById(company);
+
         const nPost: Post = new Post();
-        Object.assign(nPost, post);
+
+        if (cat !== null && cat !== undefined) {
+          nPost.category = cat;
+        }
+
+        if (comp !== null && comp !== undefined) {
+          nPost.company = comp;
+        }
+
+        if (pUser != null) {
+          nPost.author = pUser;
+        }
+
+        nPost.aliasName = aliasName;
+        nPost.content = content;
+        nPost.shortContent = shortContent;
+        nPost.title = title;
+
         nPost.images = [];
         nPost.metaDatas = [];
 
         post.metaDatas &&
-          post.metaDatas.forEach(async (metaData, idx) => {
+          post.metaDatas.forEach((metaData: MetaDeta) => {
             if (metaData.id > 0) {
               nPost.addMeta(metaData);
             } else {
@@ -44,7 +78,7 @@ class PostService {
         nPost.addAllMetaData(dbMetas);
 
         post.images &&
-          post.images.forEach(async (image, idx) => {
+          post.images.forEach((image: ImageGallery) => {
             if (image.id > 0) {
               nPost.addImage(image);
             } else {
@@ -54,15 +88,14 @@ class PostService {
         const dbImages = await queryRunner.manager.save(ImageGallery, images);
         nPost.addAllImage(dbImages);
 
-        apiWriteLog.info(`Post image Size ${nPost.images.length}`);
-        apiWriteLog.info(`Post metaDatas Size ${nPost.metaDatas.length}`);
-
         const initPost = queryRunner.manager.create(Post, nPost);
         resp = await queryRunner.manager.save(initPost);
 
+        console.log("After Save Post ", resp);
         await queryRunner.commitTransaction();
       } catch (error) {
         queryRunner.rollbackTransaction();
+        console.log("Post Save error ", error);
       } finally {
         if (queryRunner.isReleased) {
           await queryRunner.release();
@@ -83,10 +116,29 @@ class PostService {
     }
   }
 
+  async getByAlias(alias: any) {
+    try {
+      const blog = await AppDataSource.createQueryBuilder(Post, "post")
+        .leftJoinAndSelect("post.images", "images")
+        .leftJoinAndSelect("post.metaDatas", "metaDatas")
+        .leftJoinAndSelect("post.company", "company")
+        .leftJoinAndSelect("post.category", "category")
+        .leftJoinAndSelect("post.author", "author")
+        .where({ aliasName: alias })
+        .getOne();
+      return blog;
+    } catch (error) {
+      apiWriteLog.error("Error getpostByAlias ", error);
+      return null;
+    }
+  }
+
   async getAll(): Promise<Post[] | null | undefined> {
     this.initRepository();
     try {
-      const post = await this.postRepository?.find();
+      const post = await AppDataSource.createQueryBuilder(Post, "post")
+        .leftJoinAndSelect("post.images", "images")
+        .getMany();
       return post;
     } catch (err) {
       apiWriteLog.error(`Error All post `, err);

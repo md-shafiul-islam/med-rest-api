@@ -2,13 +2,10 @@ import {
   Column,
   Entity,
   Index,
-  Generated,
   JoinColumn,
   JoinTable,
   ManyToMany,
   ManyToOne,
-  MaxKey,
-  OneToMany,
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { Company } from "./Company";
@@ -48,6 +45,10 @@ export class Medicine {
   @Column({ name: "dra", type: "text", nullable: true })
   dra: string;
 
+  @ManyToOne(() => Category, (category: Category) => category.id)
+  @JoinColumn({ name: "category" })
+  category: Category;
+  
   @ManyToOne(() => Generic, (generic: Generic) => generic.id)
   @JoinColumn({ name: "generic" })
   generic: Generic;

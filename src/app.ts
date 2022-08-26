@@ -9,6 +9,7 @@ import routes from "./routes";
 import { AppDataSource } from "./database/AppDataSource";
 import errorMiddleware from "./middleware/error.middleware";
 import { initialController } from "./controller/initial.controller";
+import bodyParser from "body-parser";
 
 class App {
   port = config.appPort as number;
@@ -36,8 +37,8 @@ class App {
     routes(this.app);
   }
   initializeMiddlewares() {
-    this.app.use(express.json());
-    this.app.use(express.urlencoded({ extended: false }));
+    this.app.use(express.json({ limit: "100mb" }));
+    this.app.use(express.urlencoded({ extended: true }));
     this.app.use(errorMiddleware);
   }
 
@@ -56,7 +57,6 @@ class App {
       log.info(`🚀 App listening on the port http://${this.host}:${this.port}`);
       log.info(`******************** ************** ******************* `);
     });
-    
   }
 }
 

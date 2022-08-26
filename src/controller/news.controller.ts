@@ -1,7 +1,4 @@
 import { Request, Response } from "express";
-import { News } from "../model/News";
-import { categoryService } from "../service/category.service";
-import { companyService } from "../service/company.service";
 import { newsService } from "../service/news.service";
 import respFormat from "../utils/response/respFormat";
 
