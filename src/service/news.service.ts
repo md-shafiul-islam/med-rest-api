@@ -82,7 +82,6 @@ class NewsService {
         const dbMetas = await queryRunner.manager.save(metadatas);
         nNews.addAllMeta(dbMetas);
 
-        console.log("Befor Save news ", JSON.stringify(nNews, null, 2));
         saveNews = await queryRunner.manager.save(nNews);
 
         await queryRunner.commitTransaction();
@@ -112,7 +111,7 @@ class NewsService {
 
   async getByAlias(alias: any) {
     this.initRepository();
-    console.log("Get News By Alias Name ", alias);
+
     try {
       const news = await AppDataSource.createQueryBuilder(News, "news")
         .leftJoinAndSelect("news.images", "images")
@@ -140,8 +139,6 @@ class NewsService {
         .limit(size)
         .offset(start)
         .getMany();
-
-      console.log("News Response ", news);
 
       return news;
     } catch (err) {

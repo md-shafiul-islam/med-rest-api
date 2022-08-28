@@ -1,14 +1,11 @@
 import {
   Column,
   Entity,
-  JoinColumn,
   JoinTable,
   ManyToMany,
-  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from "typeorm";
-import { Category } from "./Category";
 import { Medicine } from "./Medicine";
 import { MetaDeta } from "./MetaData";
 

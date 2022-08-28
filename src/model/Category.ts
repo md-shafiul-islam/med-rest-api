@@ -1,18 +1,15 @@
 import {
   Column,
   Entity,
-  JoinColumn,
   OneToMany,
   PrimaryGeneratedColumn,
   Tree,
   TreeChildren,
   TreeParent,
-  TreeLevelColumn,
 } from "typeorm";
 import { News } from "./News";
 import { Post } from "./Post";
 import { Medicine } from "./Medicine";
-import { Generic } from "./Generic";
 
 @Entity({ name: "category" })
 @Tree("closure-table", {

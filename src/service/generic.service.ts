@@ -51,7 +51,7 @@ class GenericService {
         .leftJoinAndSelect("generic.medicines", "medicine")
         .leftJoinAndSelect("medicine.company", "company")
         .getOne();
-      console.log("Generic By Alias Name ", generic);
+
       return generic;
     } catch (error) {
       apiWriteLog.error("Service Generic not found ", error);
@@ -75,10 +75,10 @@ class GenericService {
   async getById(id: number): Promise<Generic | null | undefined> {
     this.initRepository();
     try {
-      const specification = await this.genericRepository?.findOne({
+      const generic = await this.genericRepository?.findOne({
         where: { id: id },
       });
-      return specification;
+      return generic;
     } catch (err) {
       apiWriteLog.error("Error getspecificationByID ", err);
       return null;
@@ -104,22 +104,9 @@ class GenericService {
   }
 
   async update(
-    specification: Partial<Generic>
+    generic: Partial<Generic>
   ): Promise<UpdateResult | null | undefined> {
     this.initRepository();
-    if (!esIsEmpty(specification)) {
-      try {
-        const updatespecification = await this.genericRepository?.update(
-          { id: specification.id },
-          specification
-        );
-
-        return updatespecification;
-      } catch (error) {
-        apiWriteLog.error(`Services Update Generic Error, `, error);
-        return null;
-      }
-    }
 
     return null;
   }
@@ -169,7 +156,7 @@ class GenericService {
 
       await queryRunner.commitTransaction();
     } catch (error) {
-      apiWriteLog.error("Generic using Tag & Meta Save Error ", error);
+      apiWriteLog.error("Generic using Meta Save Error ", error);
       await queryRunner.rollbackTransaction();
     } finally {
       if (queryRunner.isReleased) {
@@ -205,7 +192,7 @@ class GenericService {
         metadata2.content = `${item.name}`;
         metadata2.generics = [item];
         const insMetaData2 = queryRunner.manager.create(MetaDeta, metadata2);
-        +metaDatas.push(insMetaData);
+        metaDatas.push(insMetaData);
         metaDatas.push(insMetaData2);
         queryRunner.manager.save(MetaDeta, metaDatas);
         item.addAllMetaData(metaDatas);
@@ -221,7 +208,7 @@ class GenericService {
 
       await queryRunner.commitTransaction();
     } catch (error) {
-      apiWriteLog.error("Generic using Tag & Meta Save Error ", error);
+      apiWriteLog.error("Generic using Meta Save Error ", error);
       await queryRunner.rollbackTransaction();
     } finally {
       if (queryRunner.isReleased) {

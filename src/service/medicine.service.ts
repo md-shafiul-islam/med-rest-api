@@ -196,7 +196,7 @@ class MedicineService {
         //Save New Metatdata
 
         if (medicine.metaDatas) {
-          medicine.metaDatas.forEach(async (item, idx) => {
+          medicine.metaDatas.forEach((item, idx) => {
             if (item.id > 0 && nMedicine.addMetaData !== undefined) {
               nMedicine.addMetaData(item);
             } else {
@@ -277,14 +277,7 @@ class MedicineService {
     this.initRepository();
     try {
       //company: Company;
-      console.log(
-        "Get ALl Medicine Start ",
-        start,
-        " Size, ",
-        size,
-        " Letter ",
-        letter
-      );
+
       let medicines = [];
       if (!esIsEmpty(letter)) {
         if (letter === "num") {

@@ -93,9 +93,7 @@ class CategoryService {
           dbCategory.parent = parent;
         }
 
-        const updateCategory = await this.categoryRepository?.save(dbCategory);
-        apiWriteLog.info("Category Update Response ", updateCategory);
-        return updateCategory;
+        return null;
       }
     } catch (error) {
       apiWriteLog.error(`Update category Error, `, error);

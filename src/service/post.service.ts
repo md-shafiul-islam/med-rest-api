@@ -91,11 +91,11 @@ class PostService {
         const initPost = queryRunner.manager.create(Post, nPost);
         resp = await queryRunner.manager.save(initPost);
 
-        console.log("After Save Post ", resp);
+        
         await queryRunner.commitTransaction();
       } catch (error) {
         queryRunner.rollbackTransaction();
-        console.log("Post Save error ", error);
+        apiWriteLog.error("Post Save error ", error);
       } finally {
         if (queryRunner.isReleased) {
           await queryRunner.release();

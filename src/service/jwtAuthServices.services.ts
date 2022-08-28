@@ -1,8 +1,8 @@
 import { User } from "../model/User";
 import jwt from "jsonwebtoken";
 import { AppDataSource } from "../database/AppDataSource";
-import { JwtToken } from "../model/JwtToken";
 import { esIsEmpty } from "../utils/esHelper";
+import { apiWriteLog } from "../logger/writeLog";
 class JwtAuthServices {
   async genaretJwtToken(user: User) {
     let signToken = "";
@@ -33,18 +33,17 @@ class JwtAuthServices {
 
         return signToken;
       } catch (error) {
-        console.log("Create Token Failed ", error);
+        apiWriteLog.error("Create Token Failed ", error);
       }
     }
     return signToken;
   }
 
   async getTokenSecretKey() {
-    const dbToken = await this.getDBToken();
     const secretKey =
       process.env.JWT_SECRET_KEY !== undefined
         ? process.env.JWT_SECRET_KEY
-        : dbToken;
+        : "d5bfd5fa9a5f1e3dc24084a6d906de048e8bfcd4c34e2057d3059070ab3217e9d342f312b04dffbdb6d9593a1dcd132fb128dfb08f424eb5690fcb21988ca204";
     return secretKey;
   }
 
@@ -64,28 +63,10 @@ class JwtAuthServices {
         }
       }
     } catch (error) {
-      console.log("JWT Token Verify Error ", error);
+      apiWriteLog.error("JWT Token Verify Error ", error);
     }
 
     return vToken;
-  }
-
-  async getDBToken() {
-    let token = "";
-    const tokenResp = await AppDataSource.createQueryBuilder(
-      JwtToken,
-      "jwtToken"
-    )
-      .where({ id: 1 })
-      .getOne();
-
-    if (typeof tokenResp === "string") {
-      token = tokenResp;
-    } else {
-      token = "";
-    }
-
-    return "";
   }
 }
 

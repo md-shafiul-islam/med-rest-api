@@ -90,12 +90,6 @@ class UserService {
           let password = "";
           if (Array.isArray(user.credentials)) {
             user.credentials.forEach((credential: Credential) => {
-              console.log(
-                "User Password ",
-                credential.password,
-                " Is Active ",
-                credential.isActive
-              );
               if (credential.isActive) {
                 password = credential.password;
               }
@@ -105,7 +99,7 @@ class UserService {
           }
           if (useInf.password) {
             const userStatus = await bcrypt.compare(useInf.password, password);
-            console.log("Password Match ", userStatus);
+
             if (userStatus) {
               user.credentials = [];
               const token = await jwtAuthServices.genaretJwtToken(user);
@@ -134,12 +128,6 @@ class UserService {
           let password = "";
           if (Array.isArray(user.credentials)) {
             user.credentials.forEach((credential: Credential) => {
-              console.log(
-                "User Password ",
-                credential.password,
-                " Is Active ",
-                credential.isActive
-              );
               if (credential.isActive) {
                 password = credential.password;
               }
@@ -149,7 +137,7 @@ class UserService {
           }
           if (useInf.password) {
             const userStatus = await bcrypt.compare(useInf.password, password);
-            console.log("Password Match ", userStatus);
+
             if (userStatus) {
               user.credentials = [];
               const { publicId, firstName, lastName, userName, email, role } =
@@ -176,7 +164,6 @@ class UserService {
   async getUserByPublicId(id: any) {
     try {
       if (id !== undefined && id !== null) {
-        console.log("User ID ", id);
         const user = await AppDataSource.createQueryBuilder(User, "user")
           .where({ publicId: id })
           .getOne();
@@ -192,7 +179,7 @@ class UserService {
 
   async getById(id: any): Promise<User | null | undefined> {
     this.initRepository();
-    console.log("User ID ", id);
+
     try {
       const user = await this.userRepository?.findOne({ where: { id: id } });
 

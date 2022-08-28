@@ -4,7 +4,7 @@
     "esModuleInterop": true,
     "target": "ESNext",
     "module": "commonjs",
-    "lib": ["es5", "es6", "es2017", "es2018", "ESNext"],
+    "lib": ["dom", "es5", "es6", "es2017", "es2018", "ESNext"],
     "declaration": true,
     "allowJs": true,
     "strict": true,
