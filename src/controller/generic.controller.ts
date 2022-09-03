@@ -5,6 +5,17 @@ import { genericService } from "../service/generic.service";
 import respFormat from "../utils/response/respFormat";
 
 class GenericController {
+  async getCount(req: Request, resp: Response) {
+    try {
+      const count = await genericService.getCount(req.query);
+      resp.status(202);
+      resp.send(respFormat(count, "generic Done!", true));
+    } catch (error) {
+      resp.status(200);
+      resp.send(respFormat(null, "generic Count failed"));
+    }
+  }
+
   async getByQueryName(req: Request, resp: Response) {
     try {
       if (req.params) {
@@ -31,7 +42,6 @@ class GenericController {
     }
   }
   async getByAliasName(req: Request, resp: Response) {
-    
     const query = decodeURI(req.url.substring(16));
 
     try {

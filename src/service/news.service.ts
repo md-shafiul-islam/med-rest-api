@@ -24,8 +24,11 @@ class NewsService {
     if (news) {
       const nNews: News = new News();
 
+      console.log("News user ID ", news?.user?.id);
+
       const user = await userService.getUserByPublicId(news?.user?.id);
 
+      console.log("News User ", user);
       const category = await categoryService.getCategoryById(news.category);
       const company = await companyService.getCompanyById(news.company);
 
@@ -81,7 +84,7 @@ class NewsService {
 
         const dbMetas = await queryRunner.manager.save(metadatas);
         nNews.addAllMeta(dbMetas);
-
+        queryRunner.manager.create(News, nNews);
         saveNews = await queryRunner.manager.save(nNews);
 
         await queryRunner.commitTransaction();
@@ -133,12 +136,20 @@ class NewsService {
     try {
       const { start, size, order } = query;
       const odr = order === "desc" ? "DESC" : "ASC";
-      const news = await AppDataSource.createQueryBuilder(News, "news")
-        .leftJoinAndSelect("news.images", "images")
-        .orderBy("news.crateDate", odr)
-        .limit(size)
-        .offset(start)
-        .getMany();
+      let news: News[] = [];
+      if (start >= 0) {
+        news = await AppDataSource.createQueryBuilder(News, "news")
+          .leftJoinAndSelect("news.images", "images")
+          .orderBy("news.crateDate", odr)
+          .limit(size)
+          .offset(start)
+          .getMany();
+      } else {
+        news = await AppDataSource.createQueryBuilder(News, "news")
+          .leftJoinAndSelect("news.images", "images")
+          .orderBy("news.crateDate", odr)
+          .getMany();
+      }
 
       return news;
     } catch (err) {

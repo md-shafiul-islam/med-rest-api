@@ -5,6 +5,8 @@ const genericRoute = express.Router();
 
 genericRoute.get("/", genericController.getAll);
 
+genericRoute.get("/count/", genericController.getCount);
+
 genericRoute.get(`/:id`, genericController.getById);
 
 genericRoute.get(`/alias/als/`, genericController.getByAliasName);

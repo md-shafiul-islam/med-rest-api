@@ -1,3 +1,4 @@
+import { ParsedQs } from "qs";
 import { Repository, UpdateResult } from "typeorm";
 import { AppDataSource } from "../database/AppDataSource";
 import { apiWriteLog } from "../logger/writeLog";
@@ -11,6 +12,19 @@ class GenericService {
   private initRepository(): void {
     if (this.genericRepository === null) {
       this.genericRepository = AppDataSource.getRepository(Generic);
+    }
+  }
+
+  async getCount(query: any) {
+    try {
+      this.initRepository();
+      const count = await this.genericRepository?.count({});
+      console.log("Generic Services Count ", count);
+      return count;
+    } catch (error) {
+      console.log("Generice Count Error ", error);
+      apiWriteLog.error("Generic Count Failed ", error);
+      return 0;
     }
   }
 

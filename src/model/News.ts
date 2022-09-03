@@ -37,7 +37,7 @@ export class News {
   })
   metaDatas: MetaDeta[];
 
-  @Column({ type: "text" })
+  @Column({ type: "longtext" })
   content: string;
 
   @Column({ name: "short_content", type: "text" })

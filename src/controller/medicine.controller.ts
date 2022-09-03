@@ -83,6 +83,7 @@ class MedicineController {
   }
 
   async getAllForSearch(req: Request, resp: Response) {
+    console.log("All Medicines For Search ...")
     try {
       const medicines = await medicineService.getAllForSearch();
       if (medicines) {

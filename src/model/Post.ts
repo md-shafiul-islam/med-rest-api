@@ -34,8 +34,8 @@ export class Post {
   @Column("longtext")
   content: string;
 
-  @Column({name:"short_content", type:"text"})
-  shortContent:string;
+  @Column({ name: "short_content", type: "text" })
+  shortContent: string;
 
   @ManyToOne(() => User, (user: User) => user.id, { nullable: true })
   @JoinColumn({ name: "approve_user" })
@@ -53,7 +53,6 @@ export class Post {
   @JoinColumn({ name: "author" })
   author: User;
 
-  
   @ManyToMany(() => MetaDeta, (meta: MetaDeta) => meta.posts)
   @JoinTable({
     name: "posts_metadatas",
@@ -69,6 +68,12 @@ export class Post {
   @ManyToOne(() => Category, (cat: Category) => cat.id)
   @JoinColumn({ name: "category" })
   category: Category;
+
+  @Column({ name: "is_publish", type: "boolean", default: false })
+  isPublish: Boolean;
+
+  @Column({ name: "is_approve", type: "boolean", default: false })
+  isApprove: Boolean;
 
   @CreateDateColumn()
   createdDate: Date;

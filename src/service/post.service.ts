@@ -91,7 +91,6 @@ class PostService {
         const initPost = queryRunner.manager.create(Post, nPost);
         resp = await queryRunner.manager.save(initPost);
 
-        
         await queryRunner.commitTransaction();
       } catch (error) {
         queryRunner.rollbackTransaction();
@@ -133,12 +132,26 @@ class PostService {
     }
   }
 
-  async getAll(): Promise<Post[] | null | undefined> {
+  async getAll(query: any): Promise<Post[] | null | undefined> {
     this.initRepository();
     try {
-      const post = await AppDataSource.createQueryBuilder(Post, "post")
-        .leftJoinAndSelect("post.images", "images")
-        .getMany();
+      const { start, end, order } = query;
+      let post: Post[] = [];
+      const odr = order === "desc" ? "DESC" : "ASC";
+      if (start >= 0) {
+        post = await AppDataSource.createQueryBuilder(Post, "post")
+          .leftJoinAndSelect("post.images", "images")
+          .orderBy(`post.createdDate`, odr)
+          .offset(start)
+          .limit(end)
+          .getMany();
+      } else {
+        post = await AppDataSource.createQueryBuilder(Post, "post")
+          .leftJoinAndSelect("post.images", "images")
+          .orderBy(`post.createdDate`, odr)
+          .getMany();
+      }
+
       return post;
     } catch (err) {
       apiWriteLog.error(`Error All post `, err);

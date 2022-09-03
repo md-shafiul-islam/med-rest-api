@@ -5,8 +5,10 @@ import respFormat from "../utils/response/respFormat";
 
 class PostController {
   async getAll(req: Request, resp: Response) {
+    const { start = -1, end = 100, order } = req.query;
+
     try {
-      const post = await postService.getAll();
+      const post = await postService.getAll({ start, end, order });
       if (post) {
         resp.status(200);
         resp.send(respFormat(post, "post found", true));

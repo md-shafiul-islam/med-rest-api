@@ -5,7 +5,7 @@ import respFormat from "../utils/response/respFormat";
 class NewController {
   async getAll(req: Request, resp: Response) {
     console.log("Resuest New ", req.query);
-    const { start, size, order } = req.query;
+    const { start = -1, size, order } = req.query;
     const news = await newsService.getAll({ start, size, order });
     if (news) {
       resp.status(200);
@@ -45,27 +45,7 @@ class NewController {
 
   async add(req: Request, resp: Response) {
     try {
-      const {
-        title,
-        newsAlias,
-        category,
-        company,
-        metaDatas,
-        content,
-        shortContent,
-        images,
-      } = req.body;
-
-      const nNews = await newsService.save({
-        metaDatas,
-        category,
-        company,
-        title,
-        newsAlias,
-        content,
-        shortContent,
-        images,
-      });
+      const nNews = await newsService.save(req.body);
       resp.status(201);
       resp.send(respFormat(nNews, "News Save Or Added", true));
     } catch (error) {
