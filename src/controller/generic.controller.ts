@@ -42,9 +42,12 @@ class GenericController {
     }
   }
   async getByAliasName(req: Request, resp: Response) {
-    const query = decodeURI(req.url.substring(16));
-
     try {
+      let query = null;
+      if (!isEmpty(req.url)) {
+        query = decodeURI(req.url.substring(16));
+      }
+
       if (!isEmpty(query)) {
         const generic = await genericService.getGenericByAliasName(query);
         if (generic) {

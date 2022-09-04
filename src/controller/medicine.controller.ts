@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { isEmpty } from "lodash";
 import { apiWriteLog } from "../logger/writeLog";
 import { Medicine } from "../model/Medicine";
 import { medicineService } from "../service/medicine.service";
@@ -83,7 +84,7 @@ class MedicineController {
   }
 
   async getAllForSearch(req: Request, resp: Response) {
-    console.log("All Medicines For Search ...")
+    console.log("All Medicines For Search ...");
     try {
       const medicines = await medicineService.getAllForSearch();
       if (medicines) {
@@ -181,12 +182,14 @@ class MedicineController {
     try {
       // console.log("Get Medicine Alias Query  ", req.query)
       let query = req.url.substring(17);
-      query = decodeURI(query);
+      query = !isEmpty(query) ? decodeURI(query) : "";
 
-      const medicine = await medicineService.getMedicineByAliasName(query);
-      if (medicine) {
-        resp.status(200);
-        resp.send(respFormat(medicine, `Medicine found`, true));
+      if (!isEmpty(query)) {
+        const medicine = await medicineService.getMedicineByAliasName(query);
+        if (medicine) {
+          resp.status(200);
+          resp.send(respFormat(medicine, `Medicine found`, true));
+        }
       } else {
         resp.status(202);
         resp.send(respFormat(null, "Medicine not found"));
