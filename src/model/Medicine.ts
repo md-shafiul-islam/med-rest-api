@@ -1,5 +1,6 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   Index,
   JoinColumn,
@@ -7,6 +8,7 @@ import {
   ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from "typeorm";
 import { Company } from "./Company";
 import { Category } from "./Category";
@@ -48,7 +50,7 @@ export class Medicine {
   @ManyToOne(() => Category, (category: Category) => category.id)
   @JoinColumn({ name: "category" })
   category: Category;
-  
+
   @ManyToOne(() => Generic, (generic: Generic) => generic.id)
   @JoinColumn({ name: "generic" })
   generic: Generic;
@@ -78,6 +80,15 @@ export class Medicine {
   @ManyToOne(() => Company, (company: Company) => company.id)
   @JoinColumn({ name: "company" })
   company: Company;
+
+  @CreateDateColumn({
+    name: "create_date",
+    nullable: true,
+  })
+  createDate: Date;
+
+  @UpdateDateColumn({ name: "update_date", nullable: true })
+  updateDate: Date;
 
   addMetaData(meta: MetaDeta) {
     if (!Array.isArray(this.metaDatas)) {

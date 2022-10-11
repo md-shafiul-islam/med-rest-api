@@ -17,6 +17,43 @@ class MedicineService {
     }
   }
 
+  async getAllSiteMapMedicine(start: number, size: number) {
+    try {
+      if (size > 0) {
+        const medicines = await AppDataSource.createQueryBuilder(
+          Medicine,
+          "medicine"
+        )
+          .select([
+            "medicine.name",
+            "medicine.aliasName",
+            "medicine.updateDate",
+          ])
+          .offset(start)
+          .limit(size)
+          .getMany();
+
+        return medicines;
+      } else {
+        const medicines = await AppDataSource.createQueryBuilder(
+          Medicine,
+          "medicine"
+        )
+          .select([
+            "medicine.name",
+            "medicine.aliasName",
+            "medicine.updateDate",
+          ])
+          .getMany();
+
+        return medicines;
+      }
+    } catch (error) {
+      apiWriteLog.error("Services Medicine Combo Query  Name ", error);
+      return null;
+    }
+  }
+
   async getMedicinesCount() {
     try {
       this.initRepository();
@@ -28,7 +65,7 @@ class MedicineService {
     }
   }
 
-  async getAllByQueryComboName(name: string, limit: number | any = 50) {
+  async getAllByQueryComboName(name: string, limit: number | any = 0) {
     try {
       apiWriteLog.info("Services Medicine Name Combo Query, ", name);
 
@@ -38,26 +75,53 @@ class MedicineService {
         } else {
           name = `%${name}%`;
         }
-        const medicines = await AppDataSource.createQueryBuilder(
-          Medicine,
-          "medicine"
-        )
-          .leftJoinAndSelect("medicine.generic", "generic")
+        let medicines = [];
+        if (limit > 0) {
+          medicines = await AppDataSource.createQueryBuilder(
+            Medicine,
+            "medicine"
+          )
+            .leftJoinAndSelect("medicine.generic", "generic")
 
-          .where("medicine.name LIKE :name", { name })
-          .orWhere("generic.name LIKE :name", { name })
-          .select([
-            "medicine.name",
-            "medicine.aliasName",
-            "medicine.strength",
-            "medicine.form",
-            "medicine.price",
-            "generic.name",
-            "generic.aliasName",
-          ])
-          .limit(limit)
-          .orderBy("medicine.name", "ASC")
-          .getMany();
+            .where("medicine.name LIKE :name", { name })
+            .orWhere("generic.name LIKE :name", { name })
+            .leftJoinAndSelect("medicine.company", "company")
+            .select([
+              "medicine.name",
+              "medicine.aliasName",
+              "medicine.strength",
+              "medicine.form",
+              "medicine.price",
+              "generic.name",
+              "generic.aliasName",
+              "medicine.company",
+            ])
+            .limit(limit)
+            .orderBy("medicine.name", "ASC")
+            .getMany();
+        } else {
+          medicines = await AppDataSource.createQueryBuilder(
+            Medicine,
+            "medicine"
+          )
+            .leftJoinAndSelect("medicine.generic", "generic")
+            .leftJoinAndSelect("medicine.company", "company")
+            .where("medicine.name LIKE :name", { name })
+            .orWhere("generic.name LIKE :name", { name })
+            .select([
+              "medicine.name",
+              "medicine.aliasName",
+              "medicine.strength",
+              "medicine.form",
+              "medicine.price",
+              "generic.name",
+              "generic.aliasName",
+              "company.name",
+              "company.aliasName",
+            ])
+            .orderBy("medicine.name", "ASC")
+            .getMany();
+        }
 
         return medicines;
       }

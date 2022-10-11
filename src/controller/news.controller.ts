@@ -1,12 +1,29 @@
 import { Request, Response } from "express";
 import { newsService } from "../service/news.service";
+import { helperIsNumber } from "../utils/esHelper";
 import respFormat from "../utils/response/respFormat";
 
 class NewController {
   async getAll(req: Request, resp: Response) {
-    console.log("Resuest New ", req.query);
     const { start = -1, size, order } = req.query;
     const news = await newsService.getAll({ start, size, order });
+    if (news) {
+      resp.status(200);
+      resp.send(respFormat(news, "news found", true));
+    } else {
+      resp.status(202);
+      resp.send(respFormat(news, "news not found"));
+    }
+  }
+
+  async getNewSiteMapItems(req: Request, resp: Response) {
+    const { start = 0, end = -1 } = req.query;
+    let strt = Number(start);
+    strt = helperIsNumber(strt) ? strt : 0;
+    let size = Number(end);
+    size = helperIsNumber(size) ? size : -1;
+
+    const news = await newsService.getMapItems(strt, size);
     if (news) {
       resp.status(200);
       resp.send(respFormat(news, "news found", true));

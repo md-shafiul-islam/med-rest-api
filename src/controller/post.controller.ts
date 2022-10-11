@@ -4,6 +4,24 @@ import { postService } from "../service/post.service";
 import respFormat from "../utils/response/respFormat";
 
 class PostController {
+  async getSiteMapItems(req: Request, resp: Response) {
+    const { start = 0, end = -1 } = req.query;
+
+    try {
+      const posts = await postService.getSiteMapItems(start, end);
+      if (posts) {
+        resp.status(200);
+        resp.send(respFormat(posts, "post found", true));
+      } else {
+        resp.status(202);
+        resp.send(respFormat(posts, "post not found"));
+      }
+    } catch (error) {
+      apiWriteLog.error("post getAll Error ", error);
+      resp.status(202);
+      resp.send(respFormat(null, "post not found"));
+    }
+  }
   async getAll(req: Request, resp: Response) {
     const { start = -1, end = 100, order } = req.query;
 

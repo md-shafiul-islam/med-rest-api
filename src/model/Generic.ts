@@ -1,10 +1,12 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinTable,
   ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from "typeorm";
 import { Medicine } from "./Medicine";
 import { MetaDeta } from "./MetaData";
@@ -16,7 +18,7 @@ export class Generic {
 
   @Column({ name: "generic_key", type: "mediumtext", nullable: true })
   key: string;
-  
+
   @ManyToMany(() => MetaDeta, (metadata: MetaDeta) => metadata.generics, {
     cascade: true,
   })
@@ -84,6 +86,18 @@ export class Generic {
 
   @Column({ name: "reconstitution", type: "mediumtext", nullable: true })
   reconstitution: string;
+
+  @CreateDateColumn({
+    name: "create_date",
+    nullable: true,
+  })
+  createdDate: Date;
+
+  @UpdateDateColumn({
+    name: "update_date",
+    nullable: true,
+  })
+  updateDate: Date;
 
   addMetaData(meta: MetaDeta) {
     if (!Array.isArray(this.metaDatas)) {

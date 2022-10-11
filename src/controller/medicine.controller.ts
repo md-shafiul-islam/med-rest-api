@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { isEmpty } from "lodash";
+import { AppDataSource } from "../database/AppDataSource";
 import { apiWriteLog } from "../logger/writeLog";
 import { Medicine } from "../model/Medicine";
 import { medicineService } from "../service/medicine.service";
@@ -7,10 +8,32 @@ import { helperIsNumber } from "../utils/esHelper";
 import respFormat from "../utils/response/respFormat";
 
 class MedicineController {
+  async getSiteMapQuery(req: Request, resp: Response) {
+    try {
+      let { start, end } = req.query;
+      console.log("Request Query ", start, " End ", end);
+      let lStart = helperIsNumber(start) ? 0 : Number(start);
+      let size = helperIsNumber(end) ? -1 : Number(end);
+      console.log("Request Query ", lStart, " End ", size);
+
+      const medicineResp = await medicineService.getAllSiteMapMedicine(
+        lStart,
+        size
+      );
+
+      resp.status(200);
+      resp.send(respFormat(medicineResp, ` medicines Count`, true));
+    } catch (error) {
+      apiWriteLog.error("Medicine Count Error ", error);
+      resp.status(202);
+      resp.send(respFormat(null, "medicines Count failed"));
+    }
+  }
+
   async getAllMedicinesCount(req: Request, resp: Response) {
     try {
       const medicineResp = await medicineService.getMedicinesCount();
-      console.log("Medicine Count ", medicineResp);
+
       resp.status(200);
       resp.send(respFormat(medicineResp, ` medicines Count`, true));
     } catch (error) {
@@ -159,7 +182,7 @@ class MedicineController {
     let { start = 0, size = -1, letter = "" } = req.query;
     start = helperIsNumber(start) ? 0 : Number(start);
     size = helperIsNumber(size) ? -1 : Number(size);
-    console.log("Page Query ", start, " Size ", size);
+
     try {
       const medicines = await medicineService.getAll(size, start, letter);
       if (medicines) {

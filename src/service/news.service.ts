@@ -18,17 +18,36 @@ class NewsService {
     }
   }
 
+  async getMapItems(offset: number, limit: number) {
+    try {
+      let news: News[] = [];
+      if (limit > 0) {
+        news = await AppDataSource.createQueryBuilder(News, "news")
+          .select(["news.newsAlias", "news.updateDate"])
+          .limit(limit)
+          .offset(offset)
+          .getMany();
+      } else {
+        news = await AppDataSource.createQueryBuilder(News, "news")
+          .select(["news.newsAlias", "news.updateDate"])
+          .getMany();
+      }
+
+      return news;
+    } catch (err) {
+      apiWriteLog.error(`Error All news `, err);
+      return null;
+    }
+  }
+
   async save(news: any) {
     let saveNews: News | null = null;
 
     if (news) {
       const nNews: News = new News();
 
-      console.log("News user ID ", news?.user?.id);
-
       const user = await userService.getUserByPublicId(news?.user?.id);
 
-      console.log("News User ", user);
       const category = await categoryService.getCategoryById(news.category);
       const company = await companyService.getCompanyById(news.company);
 
@@ -113,8 +132,6 @@ class NewsService {
   }
 
   async getByAlias(alias: any) {
-    this.initRepository();
-
     try {
       const news = await AppDataSource.createQueryBuilder(News, "news")
         .leftJoinAndSelect("news.images", "images")
@@ -132,7 +149,6 @@ class NewsService {
   }
 
   async getAll(query: any): Promise<News[] | null | undefined> {
-    this.initRepository();
     try {
       const { start, size, order } = query;
       const odr = order === "desc" ? "DESC" : "ASC";

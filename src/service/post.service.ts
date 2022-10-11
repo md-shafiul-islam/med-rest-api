@@ -4,7 +4,7 @@ import { apiWriteLog } from "../logger/writeLog";
 import { ImageGallery } from "../model/ImageGallery";
 import { MetaDeta } from "../model/MetaData";
 import { Post } from "../model/Post";
-import { esIsEmpty } from "../utils/esHelper";
+import { esIsEmpty, helperIsNumber } from "../utils/esHelper";
 import { categoryService } from "./category.service";
 import { companyService } from "./company.service";
 import { userService } from "./user.service";
@@ -15,6 +15,31 @@ class PostService {
   private initRepository(): void {
     if (this.postRepository === null) {
       this.postRepository = AppDataSource.getRepository(Post);
+    }
+  }
+
+  async getSiteMapItems(start: any, end: any) {
+    try {
+      let offset = Number(start);
+      offset = helperIsNumber(offset) ? offset : 0;
+      let size = Number(end);
+      size = helperIsNumber(size) ? size : -1;
+      if (size > 0) {
+        const blogs = await AppDataSource.createQueryBuilder(Post, "post")
+          .select(["post.aliasName", "post.updateDate"])
+          .offset(offset)
+          .limit(size)
+          .getMany();
+        return blogs;
+      } else {
+        const blogs = await AppDataSource.createQueryBuilder(Post, "post")
+          .select(["post.aliasName", "post.updateDate"])
+          .getMany();
+        return blogs;
+      }
+    } catch (error) {
+      apiWriteLog.error("Error getpostByAlias ", error);
+      return null;
     }
   }
 

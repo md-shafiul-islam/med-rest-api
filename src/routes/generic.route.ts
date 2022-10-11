@@ -5,6 +5,8 @@ const genericRoute = express.Router();
 
 genericRoute.get("/", genericController.getAll);
 
+genericRoute.get("/sitemap/query/", genericController.getSiteMapItems);
+
 genericRoute.get("/count/", genericController.getCount);
 
 genericRoute.get(`/:id`, genericController.getById);

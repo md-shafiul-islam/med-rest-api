@@ -5,6 +5,8 @@ const postRoute = express.Router();
 
 postRoute.get("/", postController.getAll);
 
+postRoute.get("/sitemap/query/", postController.getSiteMapItems);
+
 postRoute.get(`/:id`, postController.getById);
 
 postRoute.get(`/alias/name`, postController.getByAliasName);

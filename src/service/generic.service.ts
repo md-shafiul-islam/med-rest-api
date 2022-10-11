@@ -28,6 +28,33 @@ class GenericService {
     }
   }
 
+  async getSiteMapItems(start: number, size: number) {
+    try {
+      if (size > 0) {
+        const generics = await AppDataSource.createQueryBuilder(
+          Generic,
+          "generic"
+        )
+          .select(["generic.updateDate", "generic.aliasName"])
+          .offset(start)
+          .limit(size)
+          .getMany();
+        return generics;
+      } else {
+        const generics = await AppDataSource.createQueryBuilder(
+          Generic,
+          "generic"
+        )
+          .select(["generic.updateDate", "generic.aliasName"])
+          .getMany();
+        return generics;
+      }
+    } catch (error) {
+      apiWriteLog.error("Service Generic Query name not found ", error);
+      return null;
+    }
+  }
+
   async getGenericByQueryName(name: string, limit: number | any = 50) {
     try {
       if (!esIsEmpty(name)) {
@@ -99,18 +126,35 @@ class GenericService {
     }
   }
 
-  async getAll(): Promise<Generic[] | null | undefined> {
-    this.initRepository();
+  async getAll(
+    offset: number,
+    limit: number
+  ): Promise<Generic[] | null | undefined> {
     try {
-      const generics = await AppDataSource.createQueryBuilder(
-        Generic,
-        "generic"
-      )
-        .leftJoin("generic.medicines", "medicines")
-        .loadRelationCountAndMap("generic.medicineSize", "generic.medicines")
-        .select(["generic.key", "generic.name", "generic.aliasName"])
-        .getMany();
-      return generics;
+      if (limit > 0) {
+        const generics = await AppDataSource.createQueryBuilder(
+          Generic,
+          "generic"
+        )
+          .leftJoin("generic.medicines", "medicines")
+          .loadRelationCountAndMap("generic.medicineSize", "generic.medicines")
+          .select(["generic.key", "generic.name", "generic.aliasName"])
+          .offset(offset)
+          .limit(limit)
+          .getMany();
+
+        return generics;
+      } else {
+        const generics = await AppDataSource.createQueryBuilder(
+          Generic,
+          "generic"
+        )
+          .leftJoin("generic.medicines", "medicines")
+          .loadRelationCountAndMap("generic.medicineSize", "generic.medicines")
+          .select(["generic.key", "generic.name", "generic.aliasName"])
+          .getMany();
+        return generics;
+      }
     } catch (err) {
       apiWriteLog.error(`Services Error All generics `, err);
       return null;

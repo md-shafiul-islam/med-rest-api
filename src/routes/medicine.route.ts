@@ -4,6 +4,7 @@ import { medicineController } from "../controller/medicine.controller";
 const medicinesRoute = express.Router();
 
 medicinesRoute.get("/", medicineController.getAll);
+medicinesRoute.get("/sitemap/query/", medicineController.getSiteMapQuery);
 
 medicinesRoute.get(`/:id`, medicineController.getById);
 

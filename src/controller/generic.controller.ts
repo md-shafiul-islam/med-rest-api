@@ -1,10 +1,29 @@
 import { Request, Response } from "express";
-import { isEmpty } from "lodash";
+import { isEmpty, isNumber } from "lodash";
 import { apiWriteLog } from "../logger/writeLog";
 import { genericService } from "../service/generic.service";
+import { helperIsNumber } from "../utils/esHelper";
 import respFormat from "../utils/response/respFormat";
 
 class GenericController {
+  async getSiteMapItems(req: Request, resp: Response) {
+    try {
+      let start = Number(req?.query?.start);
+      start = helperIsNumber(start) ? start : 0;
+
+      let size = Number(req?.query?.end);
+      size = isNumber(size) ? size : -1;
+
+      const generics = await genericService.getSiteMapItems(start, size);
+      resp.status(202);
+      resp.send(
+        respFormat(generics, `${generics?.length} Generics(s) Found`, true)
+      );
+    } catch (error) {
+      resp.status(200);
+      resp.send(respFormat(null, "generic Count failed"));
+    }
+  }
   async getCount(req: Request, resp: Response) {
     try {
       const count = await genericService.getCount(req.query);
@@ -67,8 +86,14 @@ class GenericController {
 
   async getAll(req: Request, resp: Response) {
     try {
-      apiWriteLog.info("Geting All Generic", null);
-      const generics = await genericService.getAll();
+      apiWriteLog.info("Geting All Generic", req.query);
+      const { start, end } = req.query;
+      let offset = Number(start);
+      offset = helperIsNumber(offset) ? offset : 0;
+      let limit = Number(end);
+      limit = helperIsNumber(limit) ? limit : -1;
+      
+      const generics = await genericService.getAll(offset, limit);
       if (generics) {
         resp.status(200);
         resp.send(

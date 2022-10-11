@@ -78,7 +78,7 @@ export class Post {
   @CreateDateColumn()
   createdDate: Date;
 
-  @UpdateDateColumn({ name: "update_date" })
+  @UpdateDateColumn({ name: "update_date", nullable: true })
   updateDate: Date;
 
   addAllImage(imgs: ImageGallery[]) {

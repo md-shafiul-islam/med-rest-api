@@ -5,6 +5,8 @@ const newsRoute = express.Router();
 
 newsRoute.get("/", newsController.getAll);
 
+newsRoute.get("/sitemap/query/", newsController.getNewSiteMapItems);
+
 newsRoute.get(`/:id`, newsController.getById);
 
 newsRoute.get(`/alias/name?`, newsController.getByAliasName);

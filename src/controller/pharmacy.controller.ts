@@ -12,6 +12,7 @@ class PharmacyController {
       start = helperIsNumber(start) ? 0 : Number(start);
       size = helperIsNumber(size) ? 300 : Number(size);
       const pharmacies = await pharmacyService.getAllpharmacy(start, size);
+      apiWriteLog.info(`Pharmacies Services , `, pharmacies?.length);
       resp.status(200);
       resp.send(
         respFormat(pharmacies, `${pharmacies?.length} Pharmacies found`, true)
