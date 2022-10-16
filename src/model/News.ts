@@ -19,10 +19,10 @@ export class News {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ name: "news_alias" })
+  @Column({ name: "news_alias", default:"" })
   newsAlias: string;
 
-  @Column({ length: 205 })
+  @Column({ length: 205, default:"" })
   title: string;
 
   @ManyToOne(() => User, (user: User) => user.id)
@@ -37,10 +37,10 @@ export class News {
   })
   metaDatas: MetaDeta[];
 
-  @Column({ type: "longtext" })
+  @Column({ type: "longtext", default:null  })
   content: string;
 
-  @Column({ name: "short_content", type: "text" })
+  @Column({ name: "short_content", type: "text", default:null  })
   shortContent: string;
 
   @ManyToMany(() => ImageGallery, (img: ImageGallery) => img.news)

@@ -25,16 +25,16 @@ export class Post {
   @Generated("uuid")
   publicId: string;
 
-  @Column({ name: "alias_name", unique: true })
+  @Column({ name: "alias_name", unique: true, nullable:true  })
   aliasName: string;
 
-  @Column({ length: 150 })
+  @Column({ length: 150, nullable:true })
   title: string;
 
-  @Column("longtext")
+  @Column({name:"content", type:"longtext", nullable:true })
   content: string;
 
-  @Column({ name: "short_content", type: "text" })
+  @Column({ name: "short_content", type: "text", default:null, nullable:true  })
   shortContent: string;
 
   @ManyToOne(() => User, (user: User) => user.id, { nullable: true })

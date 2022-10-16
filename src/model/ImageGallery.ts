@@ -15,19 +15,19 @@ export class ImageGallery {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ length: 155 })
+  @Column({ length: 155, nullable:true  })
   name: string;
 
-  @Column({ name: "alt_tag", length: 105 })
+  @Column({ name: "alt_tag", length: 105, nullable:true  })
   altTag: string;
 
-  @Column({ length: 105 })
+  @Column({ length: 105, nullable:true  })
   title: string;
 
-  @Column({ length: 205 })
+  @Column({ length: 205, nullable:true  })
   location: string;
 
-  @Column({ name: "image_url", length: 250 })
+  @Column({ name: "image_url", length: 250, nullable:true  })
   imageUrl: string;
 
   @ManyToOne(() => Medicine, (medicine: Medicine) => medicine.images, {
