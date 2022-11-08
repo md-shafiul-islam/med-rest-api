@@ -4,6 +4,27 @@ import { postService } from "../service/post.service";
 import respFormat from "../utils/response/respFormat";
 
 class PostController {
+  
+  async getAllByLang(req: Request, resp: Response) {
+   
+
+    try {
+      const posts = await postService.getAllByLanguage(req.query);
+      if (posts) {
+        resp.status(200);
+        resp.send(respFormat(posts, `${posts.length} post(s) found`, true));
+      } else {
+        resp.status(202);
+        resp.send(respFormat(posts, "post not found"));
+      }
+    } catch (error) {
+      apiWriteLog.error("post getAll Error ", error);
+      resp.status(202);
+      resp.send(respFormat(null, "post not found"));
+    }
+
+  }
+
   async getSiteMapItems(req: Request, resp: Response) {
     const { start = 0, end = -1 } = req.query;
 
@@ -61,8 +82,7 @@ class PostController {
   }
 
   async getByAliasName(req: Request, resp: Response) {
-    console.log("req?.params ", req?.params);
-    console.log("req?. Query ", req?.query);
+   
     const blog = await postService.getByAlias(req?.query?.alias);
 
     if (blog) {

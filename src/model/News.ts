@@ -37,6 +37,9 @@ export class News {
   })
   metaDatas: MetaDeta[];
 
+  @Column({name:"lang", default:"en"})
+  lang:string;
+
   @Column({ type: "longtext", default:null  })
   content: string;
 

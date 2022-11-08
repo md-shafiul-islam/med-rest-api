@@ -5,6 +5,8 @@ const postRoute = express.Router();
 
 postRoute.get("/", postController.getAll);
 
+postRoute.get("/lang/", postController.getAllByLang);
+
 postRoute.get("/sitemap/query/", postController.getSiteMapItems);
 
 postRoute.get(`/:id`, postController.getById);

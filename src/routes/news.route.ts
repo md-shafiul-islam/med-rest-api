@@ -4,6 +4,7 @@ import { newsController } from "../controller/news.controller";
 const newsRoute = express.Router();
 
 newsRoute.get("/", newsController.getAll);
+newsRoute.get("/lang/", newsController.getAllByLang);
 
 newsRoute.get("/sitemap/query/", newsController.getNewSiteMapItems);
 

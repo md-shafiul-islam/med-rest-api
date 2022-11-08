@@ -4,6 +4,17 @@ import { helperIsNumber } from "../utils/esHelper";
 import respFormat from "../utils/response/respFormat";
 
 class NewController {
+  async getAllByLang(req: Request, resp: Response) {
+    const news = await newsService.getAllByLanguage(req.query);
+    if (news) {
+      resp.status(200);
+      resp.send(respFormat(news, `${news.length} news found`, true));
+    } else {
+      resp.status(202);
+      resp.send(respFormat(news, "news not found"));
+    }
+  }
+
   async getAll(req: Request, resp: Response) {
     const { start = -1, size, order } = req.query;
     const news = await newsService.getAll({ start, size, order });
@@ -47,8 +58,7 @@ class NewController {
   }
 
   async getByAliasName(req: Request, resp: Response) {
-    console.log("req?.params ", req?.params);
-    console.log("req?. Query ", req?.query);
+    
     const news = await newsService.getByAlias(req?.query?.alias);
 
     if (news) {

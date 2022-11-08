@@ -18,6 +18,34 @@ class NewsService {
     }
   }
 
+  async getAllByLanguage(query: any) {
+    try {
+      const { start, size, order, type } = query;
+      const odr = order === "asc" ? "ASC" : "DESC";
+      let news: News[] = [];
+      if (start >= 0) {
+        news = await AppDataSource.createQueryBuilder(News, "news")
+          .leftJoinAndSelect("news.images", "images")
+          .where({ lang: type })
+          .orderBy("news.crateDate", odr)
+          .take(size)
+          .offset(start)
+          .getMany();
+      } else {
+        news = await AppDataSource.createQueryBuilder(News, "news")
+          .leftJoinAndSelect("news.images", "images")
+          .where({ lang: type })
+          .orderBy("news.crateDate", odr)
+          .getMany();
+      }
+
+      return news;
+    } catch (err) {
+      apiWriteLog.error(`Error All news `, err);
+      return null;
+    }
+  }
+
   async getMapItems(offset: number, limit: number) {
     try {
       let news: News[] = [];
@@ -68,11 +96,12 @@ class NewsService {
       if (user !== undefined && user !== null) {
         nNews.user = user;
       }
-      const { title, newsAlias, content, shortContent } = news;
+      const { title, newsAlias, content, shortContent, lang } = news;
       nNews.content = content;
       nNews.shortContent = shortContent;
       nNews.newsAlias = newsAlias;
       nNews.title = title;
+      nNews.lang = lang;
       const queryRunner = AppDataSource.createQueryRunner();
       await queryRunner.connect();
       queryRunner.startTransaction();

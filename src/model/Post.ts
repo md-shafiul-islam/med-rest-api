@@ -69,6 +69,9 @@ export class Post {
   @JoinColumn({ name: "category" })
   category: Category;
 
+  @Column({name:"lang", default:"en"})
+  lang:string;
+
   @Column({ name: "is_publish", type: "boolean", default: false })
   isPublish: Boolean;
 

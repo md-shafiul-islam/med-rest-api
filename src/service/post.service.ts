@@ -18,6 +18,35 @@ class PostService {
     }
   }
 
+  async getAllByLanguage(query: any) {
+    const { start = -1, end = 100, order, type = "en" } = query;
+
+    try {
+      const { start, end, order } = query;
+      let posts: Post[] = [];
+      const odr = order === "asc" ? "ASC" : "DESC";
+      if (start >= 0) {
+        posts = await AppDataSource.createQueryBuilder(Post, "post")
+          .leftJoinAndSelect("post.images", "images")
+          .where({ lang: type })
+          .orderBy(`post.createdDate`, odr)
+          .offset(start)
+          .take(end)
+          .getMany();
+      } else {
+        posts = await AppDataSource.createQueryBuilder(Post, "post")
+          .leftJoinAndSelect("post.images", "images")
+          .orderBy(`post.createdDate`, odr)
+          .getMany();
+      }
+
+      return posts;
+    } catch (err) {
+      apiWriteLog.error(`Error All post `, err);
+      return null;
+    }
+  }
+
   async getSiteMapItems(start: any, end: any) {
     try {
       let offset = Number(start);
@@ -62,6 +91,7 @@ class PostService {
           category,
           shortContent,
           user,
+          lang,
         } = post;
 
         const pUser = await userService.getUserByPublicId(user?.id);
@@ -86,6 +116,7 @@ class PostService {
         nPost.content = content;
         nPost.shortContent = shortContent;
         nPost.title = title;
+        nPost.lang = lang;
 
         nPost.images = [];
         nPost.metaDatas = [];
